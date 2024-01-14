@@ -7,6 +7,7 @@ const fs = require('fs');
 let https;
 const client = require('./client.js');
 const axios = require('axios');
+const crypto = require('crypto');
 
 /**
  * @typedef {Object} CachedDashUser
@@ -31,152 +32,109 @@ if (process.env.HTTP == 'true') {
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.redirect('https://github.com/NotPiny/DaalBotAPI');
+  res.redirect('https://github.com/DaalBot/API');
 });
 
-app.get('/dashboard/:category/:action', async(req, res) => {
-    const authorization = req.headers.authorization;
-
-    // Check if user is cached
-    const cachedUser = dashboardUsers.find(user => user.accesscode === authorization);
-    if (cachedUser && Date.now() - cachedUser.cachedTimestamp <= 900000) { // 15 minutes
-        // Use cached user data
-        const guilds = cachedUser.guilds;
-        const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
-        if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
-            // User has permission to manage this guild
-            const category = req.params.category;
-            const action = req.params.action;
-    
-            try {
-                const route = require(`./routes/dashboard/get/${category}/${action}.js`);
-                route(req, res);
-            } catch (error) {
-                console.error(error);
-                res.status(500).send('Internal Server Error');
-            }
-        } else {
-            res.status(401).send('Unauthorized');
+/**
+ * @param {express.Request} req
+ * @param {express.Response} res
+ * @returns {Promise<boolean>}
+*/
+async function checkDashAuth(req, res) {
+    try {
+        if (!req.headers.authorization) {
+            res.status(401).send({
+                error: 'Unauthorized - Missing Authorization Header'
+            });
+            return false;
         }
-    } else {
-        // Fetch user data from Discord API
-        try {
-            const guildsReq = await axios.get(`https://discord.com/api/users/@me/guilds`, {
-                headers: {
-                    Authorization: `Bearer ${authorization}`
-                }
-            })
-        
-            const guilds = guildsReq.data;
 
+        const HashedToken = crypto.createHash('sha256').update(req.headers.authorization).digest('hex');
+        const cachedUser = dashboardUsers.find(user => user.accesscode === req.headers.authorization);
+
+        if (cachedUser && Date.now() - cachedUser.cachedTimestamp <= 900000) {
+            // Use cached user data
+            const guilds = cachedUser.guilds;
             const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
-        
             if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
                 // User has permission to manage this guild
-                const category = req.params.category;
-                const action = req.params.action;
-        
-                try {
-                    const route = require(`./routes/dashboard/get/${category}/${action}.js`);
-                    route(req, res);
-                } catch (error) {
-                    console.error(error);
-                    res.status(500).send('Internal Server Error');
-                }
-
-                // Cache user data
-                dashboardUsers.push({
-                    accesscode: authorization,
-                    guilds: guilds,
-                    cachedTimestamp: Date.now()
-                });
+                return true;
             } else {
-                res.status(401).send('Unauthorized');
-            }
-        } catch (error) {
-            if (`${error}`.includes('401')) {
-                res.status(401).send('Unauthorized');
-            } else {
-                console.error(error);
-                res.status(500).send('Internal Server Error');
+                return false;
             }
         }
 
-        // Remove expired cache data
-        dashboardUsers = dashboardUsers.filter(user => Date.now() - user.cachedTimestamp <= 900000);
+        const hashedTokensAndIDs = fs.readFileSync('./data/auth.txt', 'utf-8').split('\n');
+        const hashedTokens = hashedTokensAndIDs.map(tokenAndID => tokenAndID.split(':')[1]);
+
+        if (!hashedTokens.includes(HashedToken)) {
+            res.status(401).send('Unauthorized - Token not from trusted source');
+            return false;
+        };
+
+        const guildsReq = await axios.get(`https://discord.com/api/users/@me/guilds`, {
+            headers: {
+                Authorization: `Bearer ${req.headers.authorization}`
+            }
+        })
+    
+        const guilds = guildsReq.data;
+
+        const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
+    
+        if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
+            // User has permission to manage this guild
+            return true;
+        } else {
+            res.status(401).send('Unauthorized');
+            return false;
+        }
+    } catch (error) {
+        if (error.includes('401')) {
+            res.status(401).send('Unauthorized');
+        } else if (error.includes('429')) {
+            res.status(429).send('Too Many Requests - Discord API');
+        } else {
+            res.status(500).send('Internal Server Error');
+        }
+
+        return false; // If an error occurs, assume the user is not authorized
+    }
+}
+
+app.get('/dashboard/:category/:action', async (req, res) => {
+    const isAuthorized = await checkDashAuth(req, res);
+    if (!isAuthorized) {
+        return;
+    }
+
+    const category = req.params.category;
+    const action = req.params.action;
+
+    try {
+        const route = require(`./routes/dashboard/get/${category}/${action}.js`);
+        route(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
 app.post('/dashboard/:category/:action', async(req, res) => {
-    const authorization = req.headers.authorization;
+    const isAuthorized = await checkDashAuth(req, res);
+    if (!isAuthorized) {
+        return;
+    }
 
-    // Check if user is cached
-    const cachedUser = dashboardUsers.find(user => user.accesscode === authorization);
-    if (cachedUser && Date.now() - cachedUser.cachedTimestamp <= 900000) {
-        // Use cached user data
-        const guilds = cachedUser.guilds;
-        const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
-        if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
-            // User has permission to manage this guild
-            const category = req.params.category;
-            const action = req.params.action;
-    
-            try {
-                const route = require(`./routes/dashboard/post/${category}/${action}.js`);
-                route(req, res);
-            } catch (error) {
-                console.error(error);
-                res.status(500).send('Internal Server Error');
-            }
-        } else {
-            res.status(401).send('Unauthorized');
-        }
-    } else {
-        // Fetch user data from Discord API
-        try {
-            const guildsReq = await axios.get(`https://discord.com/api/users/@me/guilds`, {
-                headers: {
-                    Authorization: `Bearer ${authorization}`
-                }
-            })
-        
-            const guilds = guildsReq.data;
+    const category = req.params.category;
+    const action = req.params.action;
 
-            const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
-        
-            if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
-                // User has permission to manage this guild
-                const category = req.params.category;
-                const action = req.params.action;
-        
-                try {
-                    const route = require(`./routes/dashboard/post/${category}/${action}.js`);
-                    route(req, res);
-                } catch (error) {
-                    console.error(error);
-                    res.status(500).send('Internal Server Error');
-                }
-
-                // Cache user data
-                dashboardUsers.push({
-                    accesscode: authorization,
-                    guilds: guilds,
-                    cachedTimestamp: Date.now()
-                });
-            } else {
-                res.status(401).send('Unauthorized');
-            }
-        } catch (error) {
-            if (`${error}`.includes('401')) {
-                res.status(401).send('Unauthorized');
-            } else {
-                console.error(error);
-                res.status(500).send('Internal Server Error');
-            }
-        }
-
-        // Remove expired cache data
-        dashboardUsers = dashboardUsers.filter(user => Date.now() - user.cachedTimestamp <= 900000);
+    try {
+        const route = require(`./routes/dashboard/post/${category}/${action}.js`);
+        route(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
