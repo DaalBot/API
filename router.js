@@ -49,6 +49,13 @@ async function checkDashAuth(req, res) {
             return false;
         }
 
+        if (!req.query.guild) {
+            res.status(400).send({
+                error: 'Bad Request - Missing guild query parameter'
+            });
+            return false;
+        }
+
         const HashedToken = crypto.createHash('sha256').update(req.headers.authorization).digest('hex');
         const cachedUser = dashboardUsers.find(user => user.accesscode === req.headers.authorization);
 
@@ -80,13 +87,16 @@ async function checkDashAuth(req, res) {
     
         const guilds = guildsReq.data;
 
-        const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
+        /**
+         * @type {string[]}
+         */
+        const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20).map(guild => guild.id);
     
-        if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
+        if (manageableGuilds.includes(req.query.guild)) {
             // User has permission to manage this guild
             return true;
         } else {
-            res.status(401).send('Unauthorized - User does not have permission to manage this guild');
+            res.status(403).send('Unauthorized - User does not have permission to manage this guild');
             return false;
         }
     } catch (error) {
