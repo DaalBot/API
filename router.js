@@ -67,7 +67,7 @@ async function checkDashAuth(req, res) {
         const hashedTokensAndIDs = fs.readFileSync('./data/auth.txt', 'utf-8').split('\n');
         const hashedTokens = hashedTokensAndIDs.map(tokenAndID => tokenAndID.split(':')[1]);
 
-        if (!hashedTokens.includes(HashedToken)) {
+        if (!hashedTokens.includes(HashedToken) && !process.env.HTTP) {
             res.status(401).send('Unauthorized - Token not from trusted source');
             return false;
         };
@@ -86,12 +86,13 @@ async function checkDashAuth(req, res) {
             // User has permission to manage this guild
             return true;
         } else {
-            res.status(401).send('Unauthorized');
+            res.status(401).send('Unauthorized - User does not have permission to manage this guild');
             return false;
         }
     } catch (error) {
+        error = `${error}`;
         if (error.includes('401')) {
-            res.status(401).send('Unauthorized');
+            res.status(401).send('Unauthorized - Invalid Token');
         } else if (error.includes('429')) {
             res.status(429).send('Too Many Requests - Discord API');
         } else {
@@ -264,3 +265,5 @@ client.on('ready', () => {
 })
 
 client.login(process.env.TOKEN);
+
+module.exports = app;

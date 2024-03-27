@@ -25,12 +25,12 @@ const data = dataRes.data;
 
 ## Writing files
 ```javascript
-const dataRes = await axios.post(`https://bot.daalbot.xyz/get/database/create`, {
+const dataRes = await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`, {
     headers: {
         'Authorization': process.env.BotCommunicationKey,
         'bot': 'Discord',
         'path': `/path/to/file`,
-        'data': 'Data to write',
+        'data': encodeURIComponent('Data to write'),
         'type': 'file',
     }
 });

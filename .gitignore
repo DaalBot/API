@@ -16,3 +16,6 @@ temp/
 
 # Logs
 *.log
+
+# Checks
+checks.js
