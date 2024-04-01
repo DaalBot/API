@@ -6,8 +6,5 @@ const express = require('express');
 */
 
 module.exports = (req, res) => {
-    res.status(200).json({
-        message: 'OK',
-        code: 200,
-    });
+    res.send('OK')
 };
