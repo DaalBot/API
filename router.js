@@ -198,11 +198,6 @@ app.post('/post/:category/:item', (req, res) => {
     }
 });
 
-// Keep this at the bottom
-app.get('*', (req, res) => {
-    res.status(404).header('Content-Type', 'image/jpeg').sendFile('./img/404.jpg', { root: __dirname });
-});
-
 if (process.env.HTTP == 'true') {
     https.createServer({
         // key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
