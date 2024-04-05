@@ -50,6 +50,22 @@ function handleError(err, req) {
     })
 }
 
+// Copied from line 451 of DaalBot/Discord daalbot.js
+async function id_generatestring(length = 32) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+
+    // Default settings: 2.08592483976E93 possible combinations [length ^ 62 (< charset length)]
+    
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result.replace(/\B(?=(.{5})+(?!.))/g, '-');
+}
+
 module.exports = {
     handleError,
+    id_generatestring
 }

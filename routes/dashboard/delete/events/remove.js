@@ -44,6 +44,15 @@ module.exports = async (req, res) => {
         }
     });
 
+    await axios.delete(`https://bot.daalbot.xyz/delete/database/remove`, {
+        headers: {
+            'Authorization': process.env.BotCommunicationKey,
+            'bot': 'Discord',
+            'path': `/events/${eventId}/`,
+            'type': 'folder'
+        }
+    });
+
     res.status(200).send({
         success: 'Event removed successfully'
     });
