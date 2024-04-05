@@ -7,9 +7,9 @@ This is pretty much useless to anyone but me, but I'm putting it here anyway bec
 - The environment is an async function
 
 ## Quick links
-[Reading and writing files](#reading-and-writing-files)
+[Reading and writing files / folders](#reading-and-writing-files--folders)
 
-# Reading and writing files
+# Reading and writing files / folders
 ## Reading files
 ```javascript
 const dataRes = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
@@ -25,7 +25,7 @@ const data = dataRes.data;
 
 ## Writing files
 ```javascript
-const dataRes = await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`, {
+const dataRes = await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`,{}, {
     headers: {
         'Authorization': process.env.BotCommunicationKey,
         'bot': 'Discord',
@@ -34,6 +34,28 @@ const dataRes = await axios.post(`https://bot.daalbot.xyz/post/database/create?e
         'type': 'file',
     }
 });
+```
 
-const data = dataRes.data;
+## Creating folders
+```javascript
+const dataRes = await axios.post(`https://bot.daalbot.xyz/post/database/create`,{}, {
+    headers: {
+        'Authorization': process.env.BotCommunicationKey,
+        'bot': 'Discord',
+        'path': `/path/to/folder`,
+        'data': ',',
+        'type': 'folder',
+    }
+});
+```
+
+## Reading folders
+```javascript
+const dataRes = await axios.get(`https://bot.daalbot.xyz/get/database/readDir`, {
+    headers: {
+        'Authorization': process.env.BotCommunicationKey,
+        'bot': 'Discord',
+        'path': `/path/to/folder`,
+    }
+});
 ```

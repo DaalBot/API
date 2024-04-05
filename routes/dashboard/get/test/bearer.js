@@ -1,10 +1,1 @@
-const express = require('express');
-
-/**
- * @param {express.Request} req
- * @param {express.Response} res
-*/
-
-module.exports = (req, res) => {
-    res.send('OK')
-};
+module.exports = (req, res) => res.send('OK');
