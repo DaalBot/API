@@ -10,7 +10,7 @@ require('dotenv').config();
 module.exports = async(req, res) => {
     const guild = req.query.guild
     const user = req.query.user
-    if (!user) return res.json({ error: 'No user provided' })
+    if (!user) return res.status(400).json({ error: 'No user provided' })
 
     const response = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
         headers: {

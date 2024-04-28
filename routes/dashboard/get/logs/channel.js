@@ -1,6 +1,5 @@
 const express = require('express');
 const axios = require('axios');
-require('dotenv').config();
 
 /**
  * @param {express.Request} req
@@ -14,7 +13,7 @@ module.exports = async(req, res) => {
             headers: {
                 'Authorization': process.env.BotCommunicationKey,
                 'bot': 'Discord',
-                'path': `/config/${guild}/channels/alerts.id`,
+                'path': `/logging/${guild}/channel.id`,
             }
         })
 

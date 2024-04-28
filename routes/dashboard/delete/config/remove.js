@@ -8,17 +8,21 @@ require('dotenv').config();
 */
 module.exports = async(req, res) => {
     const guild = req.query.guild;
+    const category = req.query.category;
+    const type = req.query.type;
+
+    if (!category || !type) return res.status(400).send('Missing category or type query parameter');
 
     try {
-        const data = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
+        await axios.delete(`https://bot.daalbot.xyz/delete/database/remove`, {
             headers: {
                 'Authorization': process.env.BotCommunicationKey,
                 'bot': 'Discord',
-                'path': `/config/${guild}/channels/alerts.id`,
+                'path': `/config/${guild}/${type}/${category}.id`,
             }
         })
 
-        return res.status(200).send(`${data.data}`); // If i dont do this express will see a channel id and think its a status code then throw a error
+        return res.status(200).send('OK');
     } catch (error) {
         if (error?.response?.status === 404) {
             // Why does axios throw a eror when its just 404 😭

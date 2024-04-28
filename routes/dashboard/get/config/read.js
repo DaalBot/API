@@ -8,13 +8,17 @@ require('dotenv').config();
 */
 module.exports = async(req, res) => {
     const guild = req.query.guild;
+    const category = req.query.category;
+    const type = req.query.type;
+
+    if (!category || !type) return res.status(400).send('Missing category or type query parameter');
 
     try {
         const data = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
             headers: {
                 'Authorization': process.env.BotCommunicationKey,
                 'bot': 'Discord',
-                'path': `/config/${guild}/channels/alerts.id`,
+                'path': `/config/${guild}/${type}/${category}.id`,
             }
         })
 
