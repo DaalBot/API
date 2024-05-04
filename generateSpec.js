@@ -46,10 +46,14 @@ async function main() {
         object.method = file.replace('routes', '').replace('/dashboard/', '').split('/')[0].toUpperCase();
         object.type = file.includes('/dashboard/') ? 'dashboard' : 'normal';
 
+        const route = require(`./${file}`);
+        if (route.noSpec) continue;
+
         if (fsSync.existsSync(file.replace('.js', '.res.js'))) { 
             object.response = require(`./${file.replace('.js', '.res.js')}`);
         } else object.response = {};
 
+        // Automatically add stuff ahhh this code kinda sucks
         if (object.type === 'dashboard') {
             const errors401 = [
                 {

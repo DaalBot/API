@@ -10,6 +10,13 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 /**
+ * @param {string} message
+*/
+async function debug(message) {
+    if (process.env.HTTP) console.log(`[DEBUG] ${message}`)
+}
+
+/**
  * @typedef {Object} CachedDashUser
  * @property {string} accesscode - The user's access code.
  * @property {Object[]} guilds - The guilds the user has access to.
@@ -34,6 +41,61 @@ app.use(cors());
 app.get('/', (req, res) => {
   res.redirect('https://github.com/DaalBot/API');
 });
+
+async function checkRequirements(req, res, file) {
+    // Check if the route has restrictions
+    if (require(`${file}`).restrictions) {
+        const restrictions = require(`${file}`).restrictions;
+
+        if (restrictions.length > 0) {
+            let authorized = false;
+            
+            for (let i = 0; i < restrictions.length; i++) {
+                let restriction = restrictions[i].split('|');
+                let type = restriction[0];
+                let value = restriction[1];
+
+                if (type == 'USER') {
+                    // Get user's ID
+                    const accessCode = req.headers.authorization;
+
+                    const res = await axios.get('https://discord.com/api/users/@me', {
+                        headers: {
+                            Authorization: `Bearer ${accessCode}`
+                        }
+                    });
+
+                    const user = res.data;
+                    const hashedId = crypto.createHash('sha256').update(user.id).digest('hex');
+
+                    debug(`User ID: ${user.id} | Hashed ID: ${hashedId} | Target Hash: ${value}`)
+
+                    if (hashedId == value) {
+                        authorized = true;
+                        break;
+                    }
+                } else if (type == 'KEY') {
+                    switch (value) {
+                        case 'Dashboard':
+                            const accessCode = req.headers.authorization;
+                            const hashedToken = crypto.createHash('sha256').update(accessCode).digest('hex');
+                            const hashedTokens = fs.readFileSync('./data/auth.txt', 'utf-8').split('\n').map(tokenAndID => tokenAndID.split(':')[1]);
+
+                            if (hashedTokens.includes(hashedToken)) {
+                                authorized = true;
+                            }
+                            break;
+                    }
+                }
+            }
+
+            if (!authorized)
+                res.status(401).send('Unauthorized');
+
+            return authorized;
+        }
+    }
+}
 
 /**
  * @param {express.Request} req
@@ -171,12 +233,15 @@ app.delete('/dashboard/:category/:action', async(req, res) => {
     }
 });
 
-app.get('/get/:category/:item', (req, res) => {
+app.get('/get/:category/:item', async(req, res) => {
     console.log(`GET ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     let category = req.params.category;
     let item = req.params.item;
   
     try {
+        const file = `./routes/get/${category}/${item}.js`;
+        const checksPassed = await checkRequirements(req, res, file);
+        if (!checksPassed) return;
         const route = require(`./routes/get/${category}/${item}.js`);
         route(req, res);
     } catch (error) {
@@ -197,6 +262,33 @@ app.post('/post/:category/:item', (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+// Now for what i like to call the fuck you cors part of this file
+app.get('/proxy', async (req, res) => {
+    // This is a bot.daalbot.xyz proxy for internal controls so its gotta be locked down (This check is just for quick replies as it just forwards the requests headers)
+    if (req.headers.authorization !== process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
+
+    try {
+        const url = req.query.url;
+        const response = await axios.get(`https://bot.daalbot.xyz/get${url}`, {
+            headers: {
+                ...req.headers,
+                host: 'bot.daalbot.xyz'
+            }
+        });
+        res.send(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
+// app.post('/proxy', async (req, res) => {
+//     // Same as above really
+//     if (req.headers.authorization !== process.env.BotCommunicationKey) return res.status(401).send('Unauthorized')
+
+
+// })
 
 if (process.env.HTTP == 'true') {
     https.createServer({
