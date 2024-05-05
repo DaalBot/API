@@ -5,7 +5,6 @@ const express = require('express');
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
-
 module.exports = (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
