@@ -5,18 +5,24 @@ const client = require('../../../client');
  * @param {express.Request} req
  * @param {express.Response} res
 */
-module.exports = async (req, res) => {
-    res.send(client.guilds.cache.map(async guild => {
+module.exports = (req, res) => {
+    let guilds = [];
+
+    client.guilds.cache.forEach(async guild => {
         const owner = await guild.fetchOwner();
-        return {
+        guilds.push({
             name: guild.name,
             id: guild.id,
             icon: guild.iconURL(),
             owner: guild.ownerId,
             ownerName: owner.user.username,
             memberCount: guild.memberCount
+        });
+
+        if (guilds.length === client.guilds.cache.size) {
+            res.json(guilds);
         }
-    }));
+    });
 };
 
 module.exports.restrictions = [
