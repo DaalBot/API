@@ -7,12 +7,13 @@ const client = require('../../../client');
 */
 module.exports = async (req, res) => {
     res.send(client.guilds.cache.map(async guild => {
+        const owner = await guild.fetchOwner();
         return {
             name: guild.name,
             id: guild.id,
             icon: guild.iconURL(),
             owner: guild.ownerId,
-            ownerName: await guild.fetchOwner().then(owner => owner.user.username),
+            ownerName: owner.user.username,
             memberCount: guild.memberCount
         }
     }));
