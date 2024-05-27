@@ -94,6 +94,8 @@ async function checkRequirements(req, res, file) {
 
             return authorized;
         }
+    } else {
+        return true;
     }
 }
 
@@ -237,13 +239,16 @@ app.get('/get/:category/:item', async(req, res) => {
     console.log(`GET ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     let category = req.params.category;
     let item = req.params.item;
-  
+
     try {
         const file = `./routes/get/${category}/${item}.js`;
         const checksPassed = await checkRequirements(req, res, file);
+        debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
         const route = require(`./routes/get/${category}/${item}.js`);
-        route(req, res);
+        debug(`Executing route`);
+        await route(req, res);
+        debug(`Route executed`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -262,33 +267,6 @@ app.post('/post/:category/:item', (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-// Now for what i like to call the fuck you cors part of this file
-app.get('/proxy', async (req, res) => {
-    // This is a bot.daalbot.xyz proxy for internal controls so its gotta be locked down (This check is just for quick replies as it just forwards the requests headers)
-    if (req.headers.authorization !== process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
-
-    try {
-        const url = req.query.url;
-        const response = await axios.get(`https://bot.daalbot.xyz/get${url}`, {
-            headers: {
-                ...req.headers,
-                host: 'bot.daalbot.xyz'
-            }
-        });
-        res.send(response.data);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-})
-
-// app.post('/proxy', async (req, res) => {
-//     // Same as above really
-//     if (req.headers.authorization !== process.env.BotCommunicationKey) return res.status(401).send('Unauthorized')
-
-
-// })
 
 if (process.env.HTTP == 'true') {
     https.createServer({
