@@ -8,8 +8,9 @@ const express = require('express');
 module.exports = (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
-    const message = req.headers.message;
-    const embed = req.headers.embed;
+    const data = JSON.parse(req.query.data);
+    const message = data.message;
+    const embed = data.embed;
 
     if (!guild || !channel) {
         res.status(400).send('Bad Request');
@@ -23,7 +24,7 @@ module.exports = (req, res) => {
 
     client.guilds.cache.get(guild).channels.cache.get(channel).send({
         content: message ? message : null,
-        embeds: embed ? [JSON.parse(embed)] : null
+        embeds: embed ? [embed] : null
     })
 
     res.status(200).send('OK');
