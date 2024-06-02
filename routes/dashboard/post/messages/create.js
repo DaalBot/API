@@ -9,8 +9,10 @@ module.exports = (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
     const data = JSON.parse(req.query.data);
-    const message = data.message;
+    const message = data.content;
     const embed = data.embed;
+
+    console.log(message)
 
     if (!guild || !channel) {
         res.status(400).send('Bad Request');
