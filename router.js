@@ -81,9 +81,8 @@ async function checkRequirements(req, res, file) {
                             const hashedToken = crypto.createHash('sha256').update(accessCode).digest('hex');
                             const hashedTokens = fs.readFileSync('./data/auth.txt', 'utf-8').split('\n').map(tokenAndID => tokenAndID.split(':')[1]);
 
-                            if (hashedTokens.includes(hashedToken)) {
+                            if (hashedTokens.includes(hashedToken))
                                 authorized = true;
-                            }
                             break;
                     }
                 }
@@ -267,6 +266,35 @@ app.post('/post/:category/:item', (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
+app.get('/config/:option', (req, res) => {
+    const path = `./config/${req.params.option}.json.public`; // Append .public so even if the user manages to access a file outside the static folder it wont exist
+
+    if (fs.existsSync(path)) {
+        res.sendFile(path, {
+            root: __dirname,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    } else {
+        res.status(404).send('Not Found');
+    }
+})
+
+const bodyParser = require('body-parser');
+
+app.patch('/config/:option', bodyParser.json(), (req, res) => {
+    if (req.headers.authorization != process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
+
+    const path = `./config/${req.params.option}.json.public`;
+
+    if (fs.existsSync(path)) {
+        fs.writeFileSync(path, `${JSON.stringify(req.body, null, 4)}`);
+        res.status(200).send('OK');
+    } else
+        res.status(404).send('Not Found');
+})
 
 if (process.env.HTTP == 'true') {
     https.createServer({
