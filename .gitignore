@@ -18,3 +18,6 @@ temp/
 
 # Checks
 checks.js
+
+# Config (Avoid overriding config files api side)
+config/

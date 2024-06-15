@@ -277,6 +277,9 @@ app.get('/config/:option', (req, res) => {
                 'Content-Type': 'application/json'
             }
         });
+    } else if (req.params.option == 'list') {
+        const files = fs.readdirSync('./config');
+        res.status(200).send(files.map(file => file.replace('.json.public', '')));
     } else {
         res.status(404).send('Not Found');
     }
@@ -289,11 +292,12 @@ app.patch('/config/:option', bodyParser.json(), (req, res) => {
 
     const path = `./config/${req.params.option}.json.public`;
 
-    if (fs.existsSync(path)) {
-        fs.writeFileSync(path, `${JSON.stringify(req.body, null, 4)}`);
-        res.status(200).send('OK');
-    } else
-        res.status(404).send('Not Found');
+    if (fs.existsSync(path))
+        fs.writeFileSync(path, `${JSON.stringify(req.body)}`);
+    else
+        fs.appendFileSync(path, `${JSON.stringify(req.body)}`);
+
+    res.status(200).send('OK');
 })
 
 if (process.env.HTTP == 'true') {
