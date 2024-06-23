@@ -1,6 +1,6 @@
 const client = require('../../../../client.js');
 const express = require('express');
-const { WebhookClient } = require('discord.js');
+const { WebhookClient, TextChannel } = require('discord.js');
 
 /**
  * @param {express.Request} req 
@@ -32,11 +32,17 @@ module.exports = async (req, res) => {
     if (!webhook.username) { // Send message as bot
         client.guilds.cache.get(guild).channels.cache.get(channel).send(messagePayload);
     } else { // Send message as webhook of bot
-        const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
+        /**
+         * @type {TextChannel | undefined}
+        */
+        const channel = client.guilds.cache.get(guild).channels.cache.get(channel);
+        if (!channel) return res.status(404).send('Channel not found');
+
+        const webhooks = await channel.fetchWebhooks();
         /**
          * @type {WebhookClient}
         */
-        const webhookClient = webhooks.find(wh => wh.token);
+        const webhookClient = webhooks.find(wh => wh.token && wh.owner.id === client.user.id);
         if (!webhookClient) return res.status(424).send('No available webhooks');
 
         webhookClient.send({
