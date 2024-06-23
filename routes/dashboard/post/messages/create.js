@@ -1,18 +1,18 @@
 const client = require('../../../../client.js');
 const express = require('express');
+const { WebhookClient } = require('discord.js');
 
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
     const data = JSON.parse(req.query.data);
     const message = data.content;
     const embed = data.embed;
-
-    console.log(message)
+    const webhook = JSON.parse(req.query.webhook ?? '{}');
 
     if (!guild || !channel) {
         res.status(400).send('Bad Request');
@@ -24,10 +24,26 @@ module.exports = (req, res) => {
         return;
     }
 
-    client.guilds.cache.get(guild).channels.cache.get(channel).send({
+    const messagePayload = {
         content: message ? message : null,
         embeds: embed ? [embed] : null
-    })
+    };
+
+    if (!webhook.username) { // Send message as bot
+        client.guilds.cache.get(guild).channels.cache.get(channel).send(messagePayload);
+    } else { // Send message as webhook of bot
+        const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
+        /**
+         * @type {WebhookClient}
+        */
+        const webhookClient = webhooks.find(wh => wh.token);
+        if (!webhookClient) return res.status(424).send('No available webhooks');
+
+        webhookClient.send({
+            ...messagePayload,
+            ...webhook
+        });
+    }
 
     res.status(200).send('OK');
 }
