@@ -31,14 +31,8 @@ module.exports = async (req, res) => {
 
     if (!webhook.username) { // Send message as bot
         client.guilds.cache.get(guild).channels.cache.get(channel).send(messagePayload);
-    } else { // Send message as webhook of bot
-        /**
-         * @type {TextChannel | undefined}
-        */
-        const channel = client.guilds.cache.get(guild).channels.cache.get(channel);
-        if (!channel) return res.status(404).send('Channel not found');
-
-        const webhooks = await channel.fetchWebhooks();
+    } else { // Send message as webhook of bot4
+        const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
         /**
          * @type {WebhookClient}
         */
