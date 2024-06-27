@@ -8,11 +8,18 @@ const fs = require('fs');
  * @param {express.Response} res 
 */
 module.exports = async (req, res) => {
-    const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public');
-    if (!validOnValues.includes(req.query.on)) {
-        return res.status(400).send({
-            error: 'Invalid on value'
-        });
+    try {
+        const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public');
+        if (!validOnValues.includes(req.query.on)) {
+            return res.status(400).send({
+                error: 'Invalid on value'
+            });
+        }
+    } catch (e) {
+        return res.status(500).send({
+            message: 'Something went wrong validating on type',
+            error: e
+        })
     }
     const id = await tools.id_generatestring(16)
 
