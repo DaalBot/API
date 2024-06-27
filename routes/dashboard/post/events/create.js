@@ -59,6 +59,7 @@ module.exports = async (req, res) => {
         
     execute: (async(${objectName}, util) => {
 // To learn more visit https://lnk.daalbot.xyz/EventsGuide
+// To learn more visit https://lnk.daalbot.xyz/EventsGuide
     })
 }`;
 
