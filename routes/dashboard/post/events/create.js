@@ -1,26 +1,26 @@
 const axios = require('axios');
 const tools = require('../../../../tools.js');
 const express = require('express');
-const fs = require('fs');
+// const fs = require('fs');
 
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
 module.exports = async (req, res) => {
-    try {
-        const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public');
-        if (!validOnValues.includes(req.query.on)) {
-            return res.status(400).send({
-                error: 'Invalid on value'
-            });
-        }
-    } catch (e) {
-        return res.status(500).send({
-            message: 'Something went wrong validating on type',
-            error: e
-        })
-    }
+    // try {
+    //     const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public');
+    //     if (!validOnValues.includes(req.query.on)) {
+    //         return res.status(400).send({
+    //             error: 'Invalid on value'
+    //         });
+    //     }
+    // } catch (e) {
+    //     return res.status(500).send({
+    //         message: 'Something went wrong validating on type',
+    //         error: e
+    //     })
+    // }
     const id = await tools.id_generatestring(16)
 
     const name = req.query.name;
