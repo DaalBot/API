@@ -1,29 +1,14 @@
 const axios = require('axios');
 const tools = require('../../../../tools.js');
 const express = require('express');
-const validOnValues = [
-    'messageCreate',
-    'messageUpdate',
-    'messageDelete',
-    'channelCreate',
-    'channelUpdate',
-    'channelDelete',
-    'guildUpdate',
-    'guildBanAdd',
-    'guildBanRemove',
-    'guildMemberAdd',
-    'guildMemberRemove',
-    'guildMemberUpdate',
-    'guildRoleCreate',
-    'guildRoleUpdate',
-    'guildRoleRemove'
-]
+const fs = require('fs');
 
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
 module.exports = async (req, res) => {
+    const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public', 'utf-8')).event_types.map(e => e.value); // Bit slow but it works
     if (!validOnValues.includes(req.query.on)) {
         return res.status(400).send({
             error: 'Invalid on value'
@@ -73,7 +58,7 @@ module.exports = async (req, res) => {
     id: '${id}',
         
     execute: (async(${objectName}, util) => {
-    // To learn more visit https://lnk.daalbot.xyz/EventsGuide
+// To learn more visit https://lnk.daalbot.xyz/EventsGuide
     })
 }`;
 

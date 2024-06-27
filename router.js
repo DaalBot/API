@@ -245,9 +245,10 @@ app.get('/get/:category/:item', async(req, res) => {
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
         const route = require(`./routes/get/${category}/${item}.js`);
+        const executingAt = Date.now();
         debug(`Executing route`);
         await route(req, res);
-        debug(`Route executed`);
+        debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');

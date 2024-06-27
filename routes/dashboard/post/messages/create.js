@@ -1,6 +1,6 @@
 const client = require('../../../../client.js');
 const express = require('express');
-const { WebhookClient, TextChannel } = require('discord.js');
+const { WebhookClient, ActionRowBuilder } = require('discord.js');
 
 /**
  * @param {express.Request} req 
@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
     const data = JSON.parse(req.query.data);
     const message = data.content;
     const embed = data.embed;
+    // const row = data.row;
     const webhook = JSON.parse(req.query.webhook ?? '{}');
 
     if (!guild || !channel) {
@@ -26,12 +27,13 @@ module.exports = async (req, res) => {
 
     const messagePayload = {
         content: message ? message : null,
-        embeds: embed ? [embed] : null
+        embeds: embed ? [embed] : null,
+        // components: row ?? null
     };
 
     if (!webhook.username) { // Send message as bot
         client.guilds.cache.get(guild).channels.cache.get(channel).send(messagePayload);
-    } else { // Send message as webhook of bot4
+    } else { // Send message as webhook of bot
         const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
         /**
          * @type {WebhookClient}
