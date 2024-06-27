@@ -1,29 +1,14 @@
 const axios = require('axios');
 const tools = require('../../../../tools.js');
 const express = require('express');
-const validOnValues = [
-    'messageCreate',
-    'messageUpdate',
-    'messageDelete',
-    'channelCreate',
-    'channelUpdate',
-    'channelDelete',
-    'guildUpdate',
-    'guildBanAdd',
-    'guildBanRemove',
-    'guildMemberAdd',
-    'guildMemberRemove',
-    'guildMemberUpdate',
-    'guildRoleCreate',
-    'guildRoleUpdate',
-    'guildRoleRemove'
-]
+const fs = require('fs');
 
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
 module.exports = async (req, res) => {
+    const validOnValues = JSON.parse(fs.readFileSync('./config/events.json.public');
     if (!validOnValues.includes(req.query.on)) {
         return res.status(400).send({
             error: 'Invalid on value'
