@@ -13,7 +13,8 @@ module.exports = (req, res) => {
             id: channel.id,
             name: channel.name,
             type: channel.type,
-            category: channel.parent ? channel.parent.id : 'None'
+            category: channel.parent ? channel.parent.id : 'None',
+            position: channel?.rawPosition,
         }
     })
 
