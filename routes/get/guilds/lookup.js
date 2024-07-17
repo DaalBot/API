@@ -8,7 +8,35 @@ const client = require('../../../client.js');
 module.exports = (req, res) => {
     const guild = req.query.guild;
 
-    res.send(client.guilds.cache.get(guild));
+    const guildObj = client.guilds.cache.get(guild);
+
+    guildObj.fetchOwner().then(owner => {
+        res.json({
+            name: guildObj.name,
+            id: guildObj.id,
+            roles: guildObj.roles.cache.map(role => role.id),
+            owner: guildObj.ownerId,
+            ownerName: owner.user.username,
+            ownerAvatar: owner.user.displayAvatarURL(),
+            memberCount: guildObj.memberCount,
+            icon: guildObj.iconURL(),
+            channels: guildObj.channels.cache.map(channel => {
+                return {
+                    id: channel.id,
+                    name: channel.name,
+                    type: channel.type,
+                    parent: channel.parent ? channel.parent.id : null
+                }
+            }),
+            emojis: guildObj.emojis.cache.map(emoji => {
+                return {
+                    id: emoji.id,
+                    name: emoji.name,
+                    url: emoji.url
+                }
+            }),
+        })
+    })
 }
 
 module.exports.restrictions = [
