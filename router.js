@@ -326,6 +326,18 @@ app.patch('/config/:option', bodyParser.json(), (req, res) => {
     res.status(200).send('OK');
 })
 
+app.post('/render/:item', bodyParser.json(), (req, res) => {
+    console.log(`POST render/${req.params.item} (${req.headers['user-agent']})`);
+    const item = req.params.item;
+    try {
+        const route = require(`./routes/render/${item}.js`);
+        route(req, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
 if (process.env.HTTP == 'true') {
     https.createServer({
         // key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
