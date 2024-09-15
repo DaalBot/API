@@ -17,6 +17,11 @@ async function debug(message) {
 }
 
 /**
+ * @type {{ip: string, timestamp: number}[]}
+*/
+let requests = [];
+
+/**
  * @typedef {Object} CachedDashUser
  * @property {string} accesscode - The user's access code.
  * @property {Object[]} guilds - The guilds the user has access to.
@@ -46,7 +51,33 @@ app.get('/', (req, res) => {
   res.redirect('https://github.com/DaalBot/API');
 });
 
+/**
+ * @param {express.Request} req 
+ * @param {express.Response} res 
+ * @param {string} file
+*/
 async function checkRequirements(req, res, file) {
+    // Check the users requests
+    const userRequests = requests.filter(request => request.ip == req.ip);
+    const now = Date.now();
+
+    // Limit the user to 45 requests per minute (0.75 requests per second)
+    if (userRequests.length > 45) {
+        const oldestRequest = userRequests[0];
+        if (now - oldestRequest.timestamp < 60 * 1000) {
+            res.status(429).send('Slow down.'); // Geez take a break
+            return false;
+        } else {
+            requests = requests.filter(request => request.ip != req.ip); // I mean cmon we have only 1GB of RAM to work with here
+        }
+    }
+
+    // Push the request to the requests array
+    requests.push({
+        ip: req.ip,
+        timestamp: Date.now()
+    });
+
     // Check if the route has restrictions
     if (require(`${file}`).restrictions) {
         const restrictions = require(`${file}`).restrictions;
@@ -109,6 +140,8 @@ async function checkRequirements(req, res, file) {
 */
 async function checkDashAuth(req, res) {
     try {
+        // Check the users requests for general route stuff
+        if (!await checkRequirements(req, res, `./routes/dashboard/${req.method.toLowerCase()}${req.path.replace('/dashboard', '')}.js`)) return false;
         if (!req.headers.authorization) {
             res.status(401).send({
                 error: 'Unauthorized - Missing Authorization Header'
@@ -204,6 +237,8 @@ async function checkDashAuth(req, res) {
             res.status(500).send('Internal Server Error');
         }
 
+        console.error(error);
+
         return false; // If an error occurs, assume the user is not authorized
     }
 }
@@ -280,13 +315,20 @@ app.get('/get/:category/:item', async(req, res) => {
     }
 });
 
-app.post('/post/:category/:item', (req, res) => {
+app.post('/post/:category/:item', async(req, res) => {
     console.log(`POST ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     const category = req.params.category;
     const item = req.params.item;
     try {
-        const route = require(`./routes/post/${category}/${item}.js`);
-        route(req, res);
+        const file = `./routes/post/${category}/${item}.js`;
+        const checksPassed = await checkRequirements(req, res, file);
+        debug(`Checks passed: ${checksPassed}`);
+        if (!checksPassed) return;
+        const route = require(`./routes/get/${category}/${item}.js`);
+        const executingAt = Date.now();
+        debug(`Executing route`);
+        await route(req, res);
+        debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
@@ -326,12 +368,19 @@ app.patch('/config/:option', bodyParser.json(), (req, res) => {
     res.status(200).send('OK');
 })
 
-app.post('/render/:item', bodyParser.json(), (req, res) => {
+app.post('/render/:item', bodyParser.json(), async(req, res) => {
     console.log(`POST render/${req.params.item} (${req.headers['user-agent']})`);
     const item = req.params.item;
     try {
+        const file = `./routes/render/${item}.js`;
+        const checksPassed = await checkRequirements(req, res, file);
+        debug(`Checks passed: ${checksPassed}`);
+        if (!checksPassed) return;
         const route = require(`./routes/render/${item}.js`);
-        route(req, res);
+        const executingAt = Date.now();
+        debug(`Executing route`);
+        await route(req, res);
+        debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
