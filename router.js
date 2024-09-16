@@ -389,19 +389,16 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
 })
 
 if (process.env.HTTP == 'true') {
-    https.createServer({
-        // key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
-        // cert: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/fullchain.pem')
-     }, app).listen(port, () => {
-         console.log(`Server listening on port ${port}`);
-     });
+    https.createServer({}, app).listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+    });
 } else {
     https.createServer({
         key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
         cert: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/fullchain.pem')
-     }, app).listen(port, () => {
-         console.log(`Server listening on port ${port}`);
-     });
+    }, app).listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+    });
 }
 
 client.on('ready', () => {
