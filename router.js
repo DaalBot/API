@@ -354,6 +354,7 @@ app.get('/config/:option', (req, res) => {
 })
 
 const bodyParser = require('body-parser');
+const { EmbedBuilder } = require('discord.js');
 
 app.patch('/config/:option', bodyParser.json(), (req, res) => {
     if (req.headers.authorization != process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
@@ -405,6 +406,27 @@ if (process.env.HTTP == 'true') {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!\n\n`)
+
+    if (process.env.HTTP) return;
+    // Send a startup message
+    /**
+     * @type {import('discord.js').TextChannel | undefined}
+    */
+    const channel = client.channels.cache.get('1244647424274862250');
+    if (!channel) return;
+
+    const releaseId = fs.readFileSync('./Release.id', 'utf-8');
+
+    const embed = new EmbedBuilder()
+        .setTitle('API Started')
+        .setDescription('The API has started successfully.')
+        .setColor('Green')
+        .setTimestamp()
+        .setFooter({
+            text: `Release ID: ${releaseId}`
+        });
+
+    channel.send(embed);
 })
 
 client.login(process.env.TOKEN);
