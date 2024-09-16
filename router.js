@@ -421,10 +421,10 @@ client.on('ready', () => {
         .setTitle('API Started')
         .setDescription('The API has started successfully.')
         .setColor('Green')
-        .setTimestamp()
         .setFooter({
             text: `Release ID: ${releaseId}`
-        });
+        })
+        .setTimestamp();
 
     channel.send(embed);
 })
