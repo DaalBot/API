@@ -324,7 +324,7 @@ app.post('/post/:category/:item', async(req, res) => {
         const checksPassed = await checkRequirements(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
-        const route = require(`./routes/get/${category}/${item}.js`);
+        const route = require(`./routes/post/${category}/${item}.js`);
         const executingAt = Date.now();
         debug(`Executing route`);
         await route(req, res);
