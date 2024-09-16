@@ -423,7 +423,9 @@ client.on('ready', () => {
         })
         .setTimestamp();
 
-    channel.send(embed);
+    channel.send({
+        embeds: [embed]
+    });
 })
 
 client.login(process.env.TOKEN);
