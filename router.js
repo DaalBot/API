@@ -428,6 +428,22 @@ client.on('ready', () => {
     });
 })
 
-client.login(process.env.TOKEN);
+// Log in the bot (Unless we're testing basic routing)
+if (!process.env.TEST) client.login(process.env.TOKEN);
+
+// Testing
+if (process.env.TEST) {
+    // If we're testing, send requests to localhost:3000
+    const axios = require('axios');
+
+    axios.get('http://localhost:3000/get/test/ping')
+
+    axios.post('http://localhost:3000/post/test/ping', {
+        message: 'Hello, world!'
+    })
+
+    // If we get no errors above simply exit the process
+    process.exit(0);
+}
 
 module.exports = app;
