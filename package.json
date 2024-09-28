@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon router.js",
-    "test": "TOKEN=None TEST=1 HTTP=1 node router.js",
+    "test": "TOKEN=None TEST=1 HTTP=true node router.js",
     "commit": "node commit.js && git add . && git commit",
     "rfignored": "git rm -r --cached ."
   },
