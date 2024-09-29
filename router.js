@@ -4,10 +4,15 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 3000;
 const fs = require('fs');
+const fsp = require('fs').promises;
 let https;
 const client = require('./client.js');
 const axios = require('axios');
 const crypto = require('crypto');
+/**
+ * @type {Object.<string, string>}
+*/
+let authIdTable = {};
 
 /**
  * @param {string} message
@@ -140,9 +145,12 @@ async function checkRequirements(req, res, file) {
 */
 async function checkDashAuth(req, res) {
     try {
+        req.id = crypto.randomBytes(16).toString('hex');
         // Check the users requests for general route stuff
+        debug(`Checking requirements for ${req.method} ${req.path}`);
         if (!await checkRequirements(req, res, `./routes/dashboard/${req.method.toLowerCase()}${req.path.replace('/dashboard', '')}.js`)) return false;
         if (!req.headers.authorization) {
+            debug('Unauthorized - Missing Authorization Header');
             res.status(401).send({
                 error: 'Unauthorized - Missing Authorization Header'
             });
@@ -150,32 +158,74 @@ async function checkDashAuth(req, res) {
         }
 
         if (invalidatedBearers.includes(req.headers.authorization)) { // Avoid making requests for known bad tokens
+            debug('Unauthorized - Invalid Token [Listed]');
             res.status(401).send('Unauthorized - Invalid Token [Listed]');
             return false;
         }
 
         if (!req.query.guild) {
+            debug('Bad Request - Missing guild query parameter');
             res.status(400).send({
                 error: 'Bad Request - Missing guild query parameter'
             });
             return false;
         }
 
+        async function onSuccess() {
+            if (req.method == 'GET') return; // All you're doing is reading data, no need to log that
+            // Check the auth lookup table
+            let userId = authIdTable[req.headers.authorization] || null;
+            
+            if (!userId) {
+                // Get the user's ID
+                const userReq = await axios.get('https://discord.com/api/users/@me', {
+                    headers: {
+                        Authorization: `Bearer ${req.headers.authorization}`
+                    }
+                });
+
+                userId = userReq.data.id;
+                authIdTable[req.headers.authorization] = userId;
+            }
+
+            if (!fs.existsSync(`./data/activity`)) await fsp.mkdir(`./data/activity`);
+            const actionObj = {
+                action: `${req.method}:${req.path}`,
+                ts: Date.now(),
+                executor: userId,
+                id: req.id
+            };
+
+            if (!fs.existsSync(`./data/activity/${req.query.guild}.json`)) return await fsp.appendFile(`./data/activity/${req.query.guild}.json`, JSON.stringify([actionObj]));
+            const activity = JSON.parse(await fsp.readFile(`./data/activity/${req.query.guild}.json`, 'utf-8'));
+            activity.push(actionObj);
+
+            if (activity.length > 25) activity.shift(); // Limit the activity log to x entries
+            await fsp.writeFile(`./data/activity/${req.query.guild}.json`, JSON.stringify(activity));
+        }
+
+        debug(`Looking for cached user`);
         const HashedToken = crypto.createHash('sha256').update(req.headers.authorization).digest('hex');
         const cachedUser = dashboardUsers.find(user => user.accesscode === req.headers.authorization);
 
         if (cachedUser && Date.now() - cachedUser.cachedTimestamp <= 15 * 60 * 1000) {
+            debug(`Using cached user data`);
             // Use cached user data
             const guilds = cachedUser.guilds;
             const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20);
+            debug(`Manageable guilds: ${manageableGuilds.map(guild => guild.id).join(', ')}`);
             if (manageableGuilds.filter(guild => guild.id == req.query.guild).length != 0) {
+                debug(`User has permission to manage this guild`);
                 // User has permission to manage this guild
+                onSuccess();
                 return true;
             } else {
+                debug(`User does not have permission to manage this guild`);
                 return false;
             }
         }
 
+        debug(`Getting hashed tokens`);
         const hashedTokensAndIDs = fs.readFileSync('./data/auth.txt', 'utf-8').split('\n');
         const hashedTokens = hashedTokensAndIDs.map(tokenAndID => tokenAndID.split(':')[1]);
 
@@ -184,12 +234,14 @@ async function checkDashAuth(req, res) {
             return false;
         };
 
+        debug(`Getting user data`);
         const guildsReq = await axios.get(`https://discord.com/api/users/@me/guilds`, {
             headers: {
                 Authorization: `Bearer ${req.headers.authorization}`
             }
         })
     
+        debug(`Got user data`);
         const guilds = guildsReq.data;
 
         // Cache the user
@@ -198,35 +250,47 @@ async function checkDashAuth(req, res) {
             guilds: guilds,
             cachedTimestamp: Date.now()
         });
+        debug(`Cached user`);
 
         /**
          * @type {string[]}
          */
         const manageableGuilds = guilds.filter(guild => guild.permissions & 0x20).map(guild => guild.id);
+        debug(`Manageable guilds: ${manageableGuilds.join(', ')}`);
     
         if (manageableGuilds.includes(req.query.guild)) {
             // User has permission to manage this guild
+            debug(`User has permission to manage this guild`);
+            onSuccess();
             return true;
         } else {
+            debug(`User does not have manage server permission`);
             if (manageableGuilds.includes('1017715574639431680')) { // Only make these requests for users in specific guild so we don't hit the rate limit
+                debug(`Checking for override permission`);
                 const userReq = await axios.get('https://discord.com/api/users/@me', {
                     headers: {
                         Authorization: `Bearer ${req.headers.authorization}`
                     }
                 });
     
+                debug(`Got user data`);
+                access
                 const user = userReq.data;
                 const hashedId = crypto.createHash('sha256').update(user.id).digest('hex'); // Hash the user's ID
     
                 if (hashedId === 'a16f75c75427a6a1939fda73a18aaff0d1612c106a09a036c0b531091737dc39') {
+                    debug(`User has override permission`);
                     // User has permission to manage this guild
+                    onSuccess();
                     return true;
                 }
             }
+            debug(`User does not have permission to manage this guild`);
             res.status(403).send('Forbidden - User does not have permission to manage this guild');
             return false;
         }
     } catch (error) {
+        debug(`Something went wrong: ${error}`);
         error = `${error}`;
         if (error.includes('401')) {
             invalidatedBearers.push(req.headers.authorization);
@@ -237,13 +301,14 @@ async function checkDashAuth(req, res) {
             res.status(500).send('Internal Server Error');
         }
 
-        console.error(error);
+        debug(`Error: ${error}`);
 
         return false; // If an error occurs, assume the user is not authorized
     }
 }
 
 app.get('/dashboard/:category/:action', async (req, res) => {
+    console.log('GET /dashboard/:category/:action');
     const isAuthorized = await checkDashAuth(req, res);
     if (!isAuthorized) {
         return;
@@ -256,7 +321,7 @@ app.get('/dashboard/:category/:action', async (req, res) => {
         const route = require(`./routes/dashboard/get/${category}/${action}.js`);
         await route(req, res);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -274,7 +339,7 @@ app.post('/dashboard/:category/:action', async(req, res) => {
         const route = require(`./routes/dashboard/post/${category}/${action}.js`);
         route(req, res);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -289,13 +354,13 @@ app.delete('/dashboard/:category/:action', async(req, res) => {
         const route = require(`./routes/dashboard/delete/${category}/${action}.js`);
         route(req, res);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
 
 app.get('/get/:category/:item', async(req, res) => {
-    console.log(`GET ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
+    debug(`GET ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     let category = req.params.category;
     let item = req.params.item;
 
@@ -310,13 +375,13 @@ app.get('/get/:category/:item', async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
 
 app.post('/post/:category/:item', async(req, res) => {
-    console.log(`POST ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
+    debug(`POST ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     const category = req.params.category;
     const item = req.params.item;
     try {
@@ -330,7 +395,7 @@ app.post('/post/:category/:item', async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -355,6 +420,7 @@ app.get('/config/:option', (req, res) => {
 
 const bodyParser = require('body-parser');
 const { EmbedBuilder } = require('discord.js');
+const { on } = require('events');
 
 app.patch('/config/:option', bodyParser.json(), (req, res) => {
     if (req.headers.authorization != process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
@@ -370,7 +436,7 @@ app.patch('/config/:option', bodyParser.json(), (req, res) => {
 })
 
 app.post('/render/:item', bodyParser.json(), async(req, res) => {
-    console.log(`POST render/${req.params.item} (${req.headers['user-agent']})`);
+    debug(`POST render/${req.params.item} (${req.headers['user-agent']})`);
     const item = req.params.item;
     try {
         const file = `./routes/render/${item}.js`;
@@ -383,26 +449,26 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
-        console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 })
 
 if (process.env.HTTP == 'true') {
     https.createServer({}, app).listen(port, () => {
-        console.log(`Server listening on port ${port}`);
+        debug(`Server listening on port ${port}`);
     });
 } else {
     https.createServer({
         key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
         cert: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/fullchain.pem')
     }, app).listen(port, () => {
-        console.log(`Server listening on port ${port}`);
+        debug(`Server listening on port ${port}`);
     });
 }
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!\n\n`)
+    debug(`Logged in as ${client.user.tag}!\n\n`)
 
     if (process.env.HTTP) return;
     // Send a startup message
