@@ -13,6 +13,7 @@ const crypto = require('crypto');
  * @type {Object.<string, string>}
 */
 let authIdTable = {};
+require('./background.js');
 
 /**
  * @param {string} message
@@ -20,6 +21,8 @@ let authIdTable = {};
 async function debug(message) {
     if (process.env.HTTP) console.log(`[DEBUG] ${message}`)
 }
+
+console.debug = debug; // Make console.debug send its data to the debug function so we can use it anywhere
 
 /**
  * @type {{ip: string, timestamp: number}[]}
@@ -420,7 +423,6 @@ app.get('/config/:option', (req, res) => {
 
 const bodyParser = require('body-parser');
 const { EmbedBuilder } = require('discord.js');
-const { on } = require('events');
 
 app.patch('/config/:option', bodyParser.json(), (req, res) => {
     if (req.headers.authorization != process.env.BotCommunicationKey) return res.status(401).send('Unauthorized');
