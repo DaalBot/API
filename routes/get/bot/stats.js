@@ -6,6 +6,7 @@ const client = require('../../../client.js');
 let cachedOutput = {
     addedAt: -1,
     data: {
+        resType: 'no-data',
         message_counts: {
             'day': 0,
         },
@@ -14,7 +15,10 @@ let cachedOutput = {
 
 module.exports = async(req, res) => {
     if (cachedOutput.addedAt + 1000 *  5 > Date.now())
-        return res.json(cachedOutput.data);
+        return res.json({
+            ...cachedOutput.data,
+            resType: 'cached'
+        });
 
     try {
         const currentData = await pantryClient.basket.get(`analytics${process.env.HTTP ? '-dev' : ''}`);
@@ -37,7 +41,8 @@ module.exports = async(req, res) => {
                     user_count: client.users.cache.size,
                     channel_count: client.channels.cache.size,
                     guild_count: client.guilds.cache.size
-                }
+                },
+                resType: 'fresh'
             }
         }
 

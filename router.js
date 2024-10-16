@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 3000;
 const fs = require('fs');
 const fsp = require('fs').promises;
-let https;
+const http = require('http');
+const bodyParser = require('body-parser');
 const client = require('./client.js');
 const axios = require('axios');
 const crypto = require('crypto');
@@ -25,11 +25,6 @@ async function debug(message) {
 console.debug = debug; // Make console.debug send its data to the debug function so we can use it anywhere
 
 /**
- * @type {{ip: string, timestamp: number}[]}
-*/
-let requests = [];
-
-/**
  * @typedef {Object} CachedDashUser
  * @property {string} accesscode - The user's access code.
  * @property {Object[]} guilds - The guilds the user has access to.
@@ -47,13 +42,7 @@ let dashboardUsers = [];
 */
 let invalidatedBearers = [];
 
-if (process.env.HTTP == 'true') {
-  https = require('http');
-} else {
-  https = require('https');
-}
-
-app.use(cors());
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.redirect('https://github.com/DaalBot/API');
@@ -64,27 +53,10 @@ app.get('/', (req, res) => {
  * @param {express.Response} res 
  * @param {string} file
 */
-async function checkRequirements(req, res, file) {
-    // Check the users requests
-    const userRequests = requests.filter(request => request.ip == req.ip);
-    const now = Date.now();
-
-    // Limit the user to 45 requests per minute (0.75 requests per second)
-    if (userRequests.length > 45) {
-        const oldestRequest = userRequests[0];
-        if (now - oldestRequest.timestamp < 60 * 1000) {
-            res.status(429).send('Slow down.'); // Geez take a break
-            return false;
-        } else {
-            requests = requests.filter(request => request.ip != req.ip); // I mean cmon we have only 1GB of RAM to work with here
-        }
-    }
-
-    // Push the request to the requests array
-    requests.push({
-        ip: req.ip,
-        timestamp: Date.now()
-    });
+async function onReqChecks(req, res, file) {
+    // General on request actions
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
 
     // Check if the route has restrictions
     if (require(`${file}`).restrictions) {
@@ -151,7 +123,7 @@ async function checkDashAuth(req, res) {
         req.id = crypto.randomBytes(16).toString('hex');
         // Check the users requests for general route stuff
         debug(`Checking requirements for ${req.method} ${req.path}`);
-        if (!await checkRequirements(req, res, `./routes/dashboard/${req.method.toLowerCase()}${req.path.replace('/dashboard', '')}.js`)) return false;
+        if (!await onReqChecks(req, res, `./routes/dashboard/${req.method.toLowerCase()}${req.path.replace('/dashboard', '')}.js`)) return false;
         if (!req.headers.authorization) {
             debug('Unauthorized - Missing Authorization Header');
             res.status(401).send({
@@ -369,7 +341,7 @@ app.get('/get/:category/:item', async(req, res) => {
 
     try {
         const file = `./routes/get/${category}/${item}.js`;
-        const checksPassed = await checkRequirements(req, res, file);
+        const checksPassed = await onReqChecks(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
         const route = require(`./routes/get/${category}/${item}.js`);
@@ -389,7 +361,7 @@ app.post('/post/:category/:item', async(req, res) => {
     const item = req.params.item;
     try {
         const file = `./routes/post/${category}/${item}.js`;
-        const checksPassed = await checkRequirements(req, res, file);
+        const checksPassed = await onReqChecks(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
         const route = require(`./routes/post/${category}/${item}.js`);
@@ -421,7 +393,6 @@ app.get('/config/:option', (req, res) => {
     }
 })
 
-const bodyParser = require('body-parser');
 const { EmbedBuilder } = require('discord.js');
 
 app.patch('/config/:option', bodyParser.json(), (req, res) => {
@@ -442,7 +413,7 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
     const item = req.params.item;
     try {
         const file = `./routes/render/${item}.js`;
-        const checksPassed = await checkRequirements(req, res, file);
+        const checksPassed = await onReqChecks(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
         const route = require(`./routes/render/${item}.js`);
@@ -456,18 +427,9 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
     }
 })
 
-if (process.env.HTTP == 'true') {
-    https.createServer({}, app).listen(port, () => {
-        debug(`Server listening on port ${port}`);
-    });
-} else {
-    https.createServer({
-        key: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/api.daalbot.xyz/fullchain.pem')
-    }, app).listen(port, () => {
-        debug(`Server listening on port ${port}`);
-    });
-}
+http.createServer({}, app).listen(port, () => {
+    debug(`Server listening on port ${port}`);
+});
 
 client.on('ready', () => {
     debug(`Logged in as ${client.user.tag}!\n\n`)
