@@ -5,6 +5,7 @@ const port = process.env.PORT || 3000;
 const fs = require('fs');
 const fsp = require('fs').promises;
 const http = require('http');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const client = require('./client.js');
 const axios = require('axios');
@@ -42,7 +43,7 @@ let dashboardUsers = [];
 */
 let invalidatedBearers = [];
 
-app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.redirect('https://github.com/DaalBot/API');
@@ -55,8 +56,7 @@ app.get('/', (req, res) => {
 */
 async function onReqChecks(req, res, file) {
     // General on request actions
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
+    res.header('Access-Control-Allow-Origin', '*');
 
     // Check if the route has restrictions
     if (require(`${file}`).restrictions) {
