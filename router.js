@@ -301,7 +301,7 @@ app.get('/dashboard/:category/:action', async (req, res) => {
     }
 });
 
-app.post('/dashboard/:category/:action', async(req, res) => {
+app.post('/dashboard/:category/:action', bodyParser.json(), async(req, res) => {
     const isAuthorized = await checkDashAuth(req, res);
     if (!isAuthorized) {
         return;

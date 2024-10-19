@@ -84,12 +84,13 @@ module.exports = async (req, res) => {
     });
 
     // Update json
-    await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`,{}, {
+    await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`,{
+        data: JSON.stringify(eventJson, null, 4)
+    }, {
         headers: {
             'Authorization': process.env.BotCommunicationKey,
             'bot': 'Discord',
             'path': `/events/events.json`,
-            'data': encodeURIComponent(JSON.stringify(eventJson, null, 4)),
             'type': 'file'
         }
     });
