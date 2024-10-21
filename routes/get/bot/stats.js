@@ -35,12 +35,13 @@ module.exports = async(req, res) => {
             addedAt: Date.now(),
             data: {
                 message_counts: {
-                    'day': dayMessages.length,
+                    'day': dayMessages.length ?? 0,
+                    'lifetime': data.totalMessages ?? 0
                 },
                 bot: {
-                    user_count: client.users.cache.size,
-                    channel_count: client.channels.cache.size,
-                    guild_count: client.guilds.cache.size
+                    user_count: client.users.cache.size ?? -1,
+                    channel_count: client.channels.cache.size ?? -1,
+                    guild_count: client.guilds.cache.size ?? -1,
                 },
                 resType: 'fresh'
             }

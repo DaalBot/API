@@ -20,6 +20,8 @@ setInterval(async () => {
         const currentData = await pantryClient.basket.get(`analytics${process.env.HTTP ? '-dev' : ''}`);
         const data = currentData;
         let messages = data.messages || [];
+        let totalMessages = data.totalMessages ?? 0;
+        totalMessages += queue.length;
 
         // Add the queued messages to the messages array
         for (let i = 0; i < queue.length; i++) {
@@ -33,7 +35,7 @@ setInterval(async () => {
         
         messages = Array.from(new Set(messages)); // Remove duplicates
 
-        await pantryClient.basket.create(`analytics${process.env.HTTP ? '-dev' : ''}`, { messages }); // Update the pantry with the new messages
+        await pantryClient.basket.create(`analytics${process.env.HTTP ? '-dev' : ''}`, { messages, totalMessages }); // Update the pantry with the new messages
         queue = []; // Clear the queue
     } catch (error) {
         if (error?.context?.includes('limited.')) return console.error('Rate limited - Pantry'); // Rate limited but its fine since we will just add it to the queue and push it later
