@@ -10,8 +10,6 @@ const client = require('../../../../client'); // Discord client
 
 module.exports = async (req, res) => {
     const guild = req.query.guild;
-    
-    if (!guild) return res.status(400).json({ error: 'Missing guild query' });
 
     const response = await axios.get(`https://bot.daalbot.xyz/get/database/readDir`, {
         headers: {

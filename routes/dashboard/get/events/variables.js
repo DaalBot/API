@@ -1,7 +1,6 @@
 const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
-const client = require('../../../../client.js');
 
 /**
  * @param {express.Request} req
@@ -33,29 +32,36 @@ module.exports = async(req, res) => {
         if (foundEvent.guild !== guild) return res.status(403).send({ error: 'Forbidden', message: 'You do not have permission to access this event.' });
     }
 
-    if (varName) {
-        const varFileReq = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
-            headers: {
-                'Authorization': process.env.BotCommunicationKey,
-                'bot': 'Discord',
-                'path': `/${varFolder}/${varName}.var`
-            }
-        });
+    try {
+        if (varName) {
+            const varFileReq = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
+                headers: {
+                    'Authorization': process.env.BotCommunicationKey,
+                    'bot': 'Discord',
+                    'path': `/${varFolder}/${varName}.var`
+                }
+            });
+    
+            const varFile = varFileReq.data;
+    
+            return res.send(varFile);
+        } else {
+            const varFilesReq = await axios.get(`https://bot.daalbot.xyz/get/database/readDir`, {
+                headers: {
+                    'Authorization': process.env.BotCommunicationKey,
+                    'bot': 'Discord',
+                    'path': `/${varFolder}`
+                }
+            });
+    
+            const varFiles = varFilesReq.data.filter(file => file?.name?.endsWith('.var')).map(file => file?.name?.replace('.var', '')); // Remove event.js source file and return only the variable names
+    
+            return res.send(varFiles);
+        }
+    } catch (e) {
+        if (e?.response?.status === 404) return res.status(404).send({ error: 'Not Found', message: 'The variable or group you are trying to access does not exist.' });
 
-        const varFile = varFileReq.data;
-
-        return res.send(varFile);
-    } else {
-        const varFilesReq = await axios.get(`https://bot.daalbot.xyz/get/database/readDir`, {
-            headers: {
-                'Authorization': process.env.BotCommunicationKey,
-                'bot': 'Discord',
-                'path': `/${varFolder}`
-            }
-        });
-
-        const varFiles = varFilesReq.data;
-
-        return res.send(varFiles);
+        console.error(e);
+        return res.status(500).send({ error: 'Internal Server Error', message: 'An error occurred while trying to access the variable(s).' });
     }
 }
