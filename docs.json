@@ -373,6 +373,21 @@
             "sort": 1
         },
         {
+            "path": "routes/dashboard/post/events/variables.js",
+            "description": "Sets or creates variables for an event in a guild.",
+            "method": "POST",
+            "route": "/dashboard/events/variables",
+            "params": {
+                "scope": "ID of the event or \"global\" for global variables",
+                "name": "The name of the variable to set"
+            },
+            "body": {
+                "data":"Data to write"
+            },
+            "restricted": true,
+            "sort": 1
+        },
+        {
             "path": "routes/dashboard/post/events/write.js",
             "description": "Writes data to an event for a guild.",
             "method": "POST",

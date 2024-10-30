@@ -1,5 +1,6 @@
 const client = require('./client.js');
 const DJS = require('discord.js');
+const axios = require('axios');
 require('dotenv').config();
 
 /**
@@ -65,7 +66,58 @@ async function id_generatestring(length = 32) {
     return result.replace(/\B(?=(.{5})+(?!.))/g, '-');
 }
 
+/**
+ * @param {string} path 
+ * @param {string} value 
+*/
+async function writeFile(path, value) {
+    await axios.post(`https://bot.daalbot.xyz/post/database/create`, {
+        data: value,
+    }, {
+        headers: {
+            'Authorization': process.env.BotCommunicationKey,
+            'bot': 'Discord',
+            'path': path,
+            'type': 'file'
+        }
+    })
+}
+
+/**
+ * @param {string} path
+ * @returns {Promise<string>}
+*/
+async function readFile(path) {
+    const res = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
+        headers: {
+            'Authorization': process.env.BotCommunicationKey,
+            'bot': 'Discord',
+            'path': path
+        }
+    });
+
+    return res.data;
+}
+
+/**
+ * @param {string} path
+*/
+async function readFolder(path) {
+    const res = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
+        headers: {
+            'Authorization': process.env.BotCommunicationKey,
+            'bot': 'Discord',
+            'path': path
+        }
+    });
+
+    return res.data;
+}
+
 module.exports = {
     handleError,
-    id_generatestring
+    id_generatestring,
+    writeFile,
+    readFile,
+    readFolder
 }
