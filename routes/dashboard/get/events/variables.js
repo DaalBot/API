@@ -54,7 +54,7 @@ module.exports = async(req, res) => {
                 }
             });
     
-            const varFiles = varFilesReq.data.filter(file => file?.name?.endsWith('.var')).map(file => file?.name?.replace('.var', '')); // Remove event.js source file and return only the variable names
+            const varFiles = varFilesReq.data.filter(file => file?.name?.endsWith('.var')); // Remove event.js source file and return only the variable names
     
             return res.send(varFiles);
         }
