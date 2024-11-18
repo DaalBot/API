@@ -8,7 +8,11 @@ require('dotenv').config();
 */
 module.exports = async(req, res) => {
     const eventId = req.query.id;
-    const data = decodeURIComponent(req.query.data); // Would be in the body but express likes to be weird
+    let data = decodeURIComponent(req.query.data ?? '');
+
+    // If no data is provided in the query, check the body (newer method but defaults gotta remain)
+    if (!data) data = req.body.data;
+    if (!data) return res.status(400).send({ error: 'Bad Request', message: 'No data provided' });
 
     const inputFileContents = data;
 
