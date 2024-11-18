@@ -56,12 +56,13 @@ module.exports = async(req, res) => {
     let eventCode = existingEventFile.replace(existingCode, inputFileContents);
 
     
-    await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`,{}, {
+    await axios.post(`https://bot.daalbot.xyz/post/database/create?enc=1`,{
+        data: eventCode
+    }, {
         headers: {
             'Authorization': process.env.BotCommunicationKey,
             'bot': 'Discord',
             'path': `/events/${eventId}/event.js`,
-            'data': encodeURIComponent(eventCode),
             'type': 'file'
         }
     });
