@@ -61,6 +61,18 @@
             "sort": 2
         },
         {
+            "path": "routes/dashboard/delete/events/variables.js",
+            "description": "Removes a variable for an event or guild.",
+            "method": "DELETE",
+            "route": "/dashboard/events/variables",
+            "params": {
+                "scope": "ID of the event or \"global\" for global variables",
+                "name": "The name of the variable to remove"
+            },
+            "restricted": true,
+            "sort": 2
+        },
+        {
             "path": "routes/dashboard/get/activity/latest.js",
             "description": "Gets the latest activity for a guild.",
             "method": "GET",

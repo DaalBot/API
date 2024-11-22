@@ -114,10 +114,25 @@ async function readFolder(path) {
     return res.data;
 }
 
+/**
+ * @param {string} path
+*/
+async function deleteFile(path) {
+    await axios.delete(`https://bot.daalbot.xyz/delete/database/remove`, {
+        headers: {
+            'Authorization': process.env.BotCommunicationKey,
+            'bot': 'Discord',
+            'path': path,
+            'type': 'file'
+        }
+    });
+}
+
 module.exports = {
     handleError,
     id_generatestring,
     writeFile,
     readFile,
-    readFolder
+    readFolder,
+    deleteFile
 }
