@@ -296,7 +296,7 @@ app.get('/dashboard/:category/:action', async (req, res) => {
         const route = require(`./routes/dashboard/get/${category}/${action}.js`);
         await route(req, res);
     } catch (error) {
-        debug(`Error: ${error}`);
+        console.error(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 });
