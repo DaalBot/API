@@ -9,9 +9,9 @@ const { WebhookClient, ActionRowBuilder, ChannelType } = require('discord.js');
 module.exports = async (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
-    const data = req.body.message ?? JSON.parse(req.query.data ?? '{}');
+    const data = req.body.message ?? JSON.parse(req.query.data ?? '{}'); // Body > Query > {} (Fail)
     const message = data.content;
-    const embed = data.embed;
+    const embed = data.embeds ?? [data.embed] ?? null; // Embeds > Embed > null
     // const row = data.row;
     const webhook = JSON.parse(req.query.webhook ?? '{}');
 
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 
     const messagePayload = {
         content: message ? message : null,
-        embeds: embed ? [embed] : null,
+        embeds: embed,
         // components: row ?? null
     };
 

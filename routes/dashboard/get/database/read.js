@@ -1,36 +1,21 @@
 const express = require('express');
 const axios = require('axios');
 require('dotenv').config();
+const tools = require('../../../../tools.js');
 
 /**
  * @param {express.Request} req 
  * @param {express.Response} res 
 */
 module.exports = async(req, res) => {
-    return res.status(501).send('Not implemented');
-    const path = req.headers.path;
-    const category = req.query.category;
-    const guild = req.query.guild;
-    const fileType = req.query.ext;
+    return res.status(501).send('Not implemented yet');
+    // const { guild, path } = req.query;
 
-    if (!category || !guild || !fileType || !path) return res.status(400).json({ error: 'Missing data' });
+    // if (!guild || !path) return res.status(400).json({ error: 'Missing "guild" or "path" query parameter' });
+    // if (path.match(/[^a-zA-Z0-9_\-\/.]/gmi) || path.includes('..')) return res.status(400).json({ error: 'Invalid "path" query parameter' });
 
-    const DisallowedRegex = new RegExp(/\./g);
+    // const data = await tools.readFile(`guilds/${guild}/${path}`);
+    // if (!data) return res.status(404).json({ error: 'File not found / File is empty' });
 
-    if (path.match(DisallowedRegex)) return res.status(400).json({ error: 'Invalid path' });
-
-    try {
-        const data = await axios.get(`https://bot.daalbot.xyz/get/database/read`, {
-            headers: {
-                'Authorization': process.env.BotCommunicationKey,
-                'bot': 'Discord',
-                'path': `/${category}/${guild}/${path}.${fileType}`,
-            }
-        })
-
-        res.status(200).json(data.data);
-    } catch (error) {
-        res.status(500).send('Internal Server Error');
-        console.error(error);
-    }
+    // res.send(data);
 }
