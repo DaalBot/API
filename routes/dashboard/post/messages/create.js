@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
     const channel = req.query.channel;
     const data = req.body.message ?? JSON.parse(req.query.data ?? '{}'); // Body > Query > {} (Fail)
     const message = data.content;
-    const embed = data.embeds ?? [data.embed] ?? null; // Embeds > Embed > null
+    const embed = data.embeds ?? data.embed ? [data.embed] : null; // Embeds > Embed > null
     // const row = data.row;
     const webhook = JSON.parse(req.query.webhook ?? '{}');
 
