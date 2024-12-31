@@ -367,7 +367,7 @@ app.get('/get/:category/:item', async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
-        debug(`Error: ${error}`);
+        console.error(error);
         res.status(500).send('Internal Server Error');
     }
 });
@@ -387,7 +387,7 @@ app.post('/post/:category/:item', async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
-        debug(`Error: ${error}`);
+        console.error(error);
         res.status(500).send('Internal Server Error');
     }
 });
