@@ -12,5 +12,5 @@ module.exports = (req, res) => {
 
     res.status(200).send('OK'); // Send OK before restarting to prevent curl from throwing a empty response error
 
-    execSync('pm2 restart 0');
+    execSync('pm2 restart 1');
 }
