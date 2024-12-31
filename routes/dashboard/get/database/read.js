@@ -8,14 +8,13 @@ const tools = require('../../../../tools.js');
  * @param {express.Response} res 
 */
 module.exports = async(req, res) => {
-    return res.status(501).send('Not implemented yet');
-    // const { guild, path } = req.query;
+    const { guild, path } = req.query;
 
-    // if (!guild || !path) return res.status(400).json({ error: 'Missing "guild" or "path" query parameter' });
-    // if (path.match(/[^a-zA-Z0-9_\-\/.]/gmi) || path.includes('..')) return res.status(400).json({ error: 'Invalid "path" query parameter' });
+    if (!guild || !path) return res.status(400).json({ error: 'Missing "guild" or "path" query parameter' });
+    if (path.match(/[^a-zA-Z0-9_\-\/.]/gmi) || path.includes('..')) return res.status(400).json({ error: 'Invalid "path" query parameter' });
 
-    // const data = await tools.readFile(`guilds/${guild}/${path}`);
-    // if (!data) return res.status(404).json({ error: 'File not found / File is empty' });
+    const data = await tools.readFile(`/managed/${guild}/${path}`);
+    if (!data) return res.status(404).json({ error: 'File not found / File is empty' });
 
-    // res.send(data);
+    res.send(data);
 }

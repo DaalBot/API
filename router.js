@@ -10,20 +10,23 @@ const bodyParser = require('body-parser');
 const client = require('./client.js');
 const axios = require('axios');
 const crypto = require('crypto');
+
 /**
  * @type {Object.<string, string>}
-*/
+ * Stores authorization IDs
+ */
 let authIdTable = {};
 require('./background.js');
 
 /**
+ * Logs debug messages if HTTP environment variable is set
  * @param {string} message
-*/
+ */
 async function debug(message) {
     if (process.env.HTTP) console.log(`[DEBUG] ${message}`)
 }
 
-console.debug = debug; // Make console.debug send its data to the debug function so we can use it anywhere
+console.debug = debug; // Redirect console.debug to custom debug function
 
 /**
  * @typedef {Object} CachedDashUser
@@ -32,15 +35,18 @@ console.debug = debug; // Make console.debug send its data to the debug function
  * @property {string} guilds.id - The ID of the guild.
  * @property {number} guilds.permissions - The permissions the user has for the guild.
  * @property {number} cachedTimestamp - The timestamp of when the user was cached. Used for cache invalidation.
-*/
+ */
 
 /**
  * @type {CachedDashUser[]}
+ * Stores cached dashboard users
  */
 let dashboardUsers = [];
+
 /**
  * @type {string[]}
-*/
+ * Stores invalidated bearer tokens
+ */
 let invalidatedBearers = [];
 
 app.use(cors());
@@ -49,11 +55,17 @@ app.get('/', (req, res) => {
   res.redirect('https://github.com/DaalBot/API');
 });
 
+// ==============================
+// ====== Request Checking ======
+// ==============================
+
 /**
+ * Performs general request checks and authorization
  * @param {express.Request} req 
  * @param {express.Response} res 
  * @param {string} file
-*/
+ * @returns {Promise<boolean>}
+ */
 async function onReqChecks(req, res, file) {
     // General on request actions
     res.header('Access-Control-Allow-Origin', '*');
@@ -114,10 +126,11 @@ async function onReqChecks(req, res, file) {
 }
 
 /**
+ * Checks dashboard authorization and performs necessary actions
  * @param {express.Request} req
  * @param {express.Response} res
  * @returns {Promise<boolean>}
-*/
+ */
 async function checkDashAuth(req, res) {
     try {
         req.id = crypto.randomBytes(16).toString('hex');
@@ -249,7 +262,6 @@ async function checkDashAuth(req, res) {
                 });
     
                 debug(`Got user data`);
-                access
                 const user = userReq.data;
                 const hashedId = crypto.createHash('sha256').update(user.id).digest('hex'); // Hash the user's ID
     
@@ -281,6 +293,10 @@ async function checkDashAuth(req, res) {
         return false; // If an error occurs, assume the user is not authorized
     }
 }
+
+// =========================
+// ====== API ROUTING ======
+// =========================
 
 app.get('/dashboard/:category/:action', async (req, res) => {
     console.log('GET /dashboard/:category/:action');
@@ -476,5 +492,3 @@ if (process.env.TEST) {
     // If we get no errors above simply exit the process
     process.exit(0);
 }
-
-module.exports = app;
