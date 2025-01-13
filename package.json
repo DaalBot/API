@@ -9,7 +9,7 @@
     "axios": "^1.7.9",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
-    "discord.js": "^14.17.2",
+    "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "pantry-node": "^0.1.3",
