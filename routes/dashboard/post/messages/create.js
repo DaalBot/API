@@ -10,26 +10,28 @@ module.exports = async (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
     const data = req.body.message ?? JSON.parse(req.query.data ?? '{}');
-    const message = data.content;
-    const embed = data.embed;
-    // const row = data.row;
+
+    if (!guild || !channel)
+        return res.status(400).send('Bad Request - Missing guild or channel');
+        
+    let messagePayload = {};
     const webhook = JSON.parse(req.query.webhook ?? '{}');
+    
+    if (!req.query.v) {
+        const message = data.content;
+        const embed = data.embed;
 
-    if (!guild || !channel) {
-        res.status(400).send('Bad Request - Missing guild or channel');
-        return;
+        if (!embed && !message)
+            return res.status(400).send('Bad Request - Missing content and embed');
+
+        messagePayload = {
+            content: message ? message : null,
+            embeds: embed ? [embed] : null,
+            // components: row ?? null
+        };
+    } else if (req.query.v == '2') {
+        messagePayload = data;
     }
-
-    if (!embed && !message) {
-        res.status(400).send('Bad Request - Missing content and embed');
-        return;
-    }
-
-    const messagePayload = {
-        content: message ? message : null,
-        embeds: embed ? [embed] : null,
-        // components: row ?? null
-    };
 
     if (!data.id) {
         if (!webhook.username) { // Send message as bot
