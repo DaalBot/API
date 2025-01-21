@@ -31,10 +31,22 @@ module.exports = async(req, res) => {
         messages = Array.from(new Set(messages));
 
         const dayMessages = messages.filter((message) => now - message < oneDay);
+
+        const history = data.history || {};
+        let monthTotal = 0;
+
+        for (let i = 0; i < 30; i++) {
+            const daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) - i;
+            
+            if (history[daysSinceEpoch]) monthTotal += history[daysSinceEpoch];
+            else break;
+        }
+
         cachedOutput = {
             addedAt: Date.now(),
             data: {
                 message_counts: {
+                    'month': monthTotal ?? 0,
                     'day': dayMessages.length ?? 0,
                     'lifetime': data.totalMessages ?? 0
                 },
