@@ -3,6 +3,7 @@ require('dotenv').config();
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
+const { existsSync } = require('fs');
 
 /**
  * @param {express.Request} req
@@ -11,13 +12,35 @@ const path = require('path');
 module.exports = async(req, res) => {
     if (req.headers.botauth !== process.env.BotCommunicationKey) return res.status(401).json({ error: 'Unauthorized' }); // Only allow key generation to the bot
     
-    const bearerToken = req.headers.authorization;
-    if (!bearerToken) return res.status(400).json({ error: 'Missing bearer token' });
+    const providedToken = req.headers.authorization;
+    if (!providedToken) return res.status(400).json({ error: 'Missing token' });
+
+    if (providedToken.startsWith('Guild ')) {
+        const keyData = providedToken.split(' ')[1];
+        const guild = Buffer.from(keyData.split('.')[0], 'base64').toString('utf-8');
+        const key = keyData.split('.')[1];
+
+        const hashedGuild = crypto.createHash('sha256').update(guild).digest('hex');
+        const hashedKey = crypto.createHash('sha256').update(key).digest('hex');
+
+        if (!existsSync('./data/guild.keys')) await fs.writeFile('./data/guild.keys', '', {
+            flag: 'w'
+        });
+
+        const keys = (await fs.readFile('./data/guild.keys', 'utf-8')).split('\n');
+        let newKeys = [];
+        if (!keys.find(k => k.startsWith(hashedGuild))) { // If the guild is not in the keys
+            newKeys = keys.filter(k => !k.startsWith(hashedGuild)); // Remove all keys for the guild
+            newKeys.push(`${hashedGuild}:${hashedKey}`); // Add the new key
+        } else {
+            newKeys = keys.map(k => k.startsWith(hashedGuild) ? `${hashedGuild}:${hashedKey}` : k); // Replace the key
+        }
+    }
 
     // Ask discord for user id
     const response = await fetch('https://discord.com/api/users/@me', {
         headers: {
-            authorization: `Bearer ${bearerToken}`
+            authorization: `Bearer ${providedToken}`
         }
     });
 
@@ -26,7 +49,7 @@ module.exports = async(req, res) => {
 
     // Hash the bearer token
     const hash = crypto.createHash('sha256');
-    hash.update(bearerToken);
+    hash.update(providedToken);
     const hashedToken = hash.digest('hex');
 
     // Read the auth file

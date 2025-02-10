@@ -145,17 +145,69 @@ async function checkDashAuth(req, res) {
             return false;
         }
 
-        if (invalidatedBearers.includes(req.headers.authorization)) { // Avoid making requests for known bad tokens
-            debug('Unauthorized - Invalid Token [Listed]');
-            res.status(401).send('Unauthorized - Invalid Token [Listed]');
-            return false;
-        }
-
         if (!req.query.guild) {
             debug('Bad Request - Missing guild query parameter');
             res.status(400).send({
                 error: 'Bad Request - Missing guild query parameter'
             });
+            return false;
+        }
+
+        async function pushActivity(actionObj) {
+            if (!fs.existsSync(`./data/activity`)) await fsp.mkdir(`./data/activity`);
+            const pushedActivity = {
+                type: 'dashboard',
+                ...actionObj,
+                action: `${req.method}:${req.path}`,
+                ts: Date.now(),
+                id: req.id
+            };
+
+            if (!fs.existsSync(`./data/activity/${req.query.guild}.json`)) return await fsp.appendFile(`./data/activity/${req.query.guild}.json`, JSON.stringify([pushedActivity]));
+            const activity = JSON.parse(await fsp.readFile(`./data/activity/${req.query.guild}.json`, 'utf-8'));
+            activity.push(pushedActivity);
+
+            if (activity.length > 25) activity.shift(); // Limit the activity log to x entries
+            await fsp.writeFile(`./data/activity/${req.query.guild}.json`, JSON.stringify(activity));
+        }
+
+        if (req.headers.authorization.startsWith('Guild ')) { // Fixed API key for integration with external services
+            const guildKeys = await fsp.readFile('./data/guild.keys', 'utf-8'); // TODO: Should just be auth.txt but thats a job for later
+            const keys = guildKeys.split('\n');
+
+            const authData = req.headers.authorization.split(' ')[1].trim().split('.');
+            const hKeyGuild = Buffer.from(authData[0], 'base64').toString('utf-8').trim();
+            const hKey = authData[1];
+
+            if (req.query.guild != hKeyGuild) {
+                debug(`Unauthorized - Guild Key does not match guild query parameter (${req.query.guild} != ${hKeyGuild})`);
+                res.status(401).send('Unauthorized - Invalid Key');
+                return false;
+            }
+
+            const hashedKey = crypto.createHash('sha256').update(hKey).digest('hex');
+            const hashedGuild = crypto.createHash('sha256').update(hKeyGuild).digest('hex');
+            
+            const key = keys.find(key => key == `${hashedGuild}:${hashedKey}`);
+
+            if (!key) {
+                debug(`Unauthorized - Could not find key "${hashedKey}" for guild "${hashedGuild}"`);
+                res.status(401).send('Unauthorized - Invalid Key');
+                return false;
+            } else {
+                debug(`Authorized - Key "${hashedKey}" for guild "${hashedGuild}"`);
+
+                await pushActivity({
+                    executor: '0', // 0 is the ID for the API
+                    type: 'automated'
+                }); // Log the action
+                return true;
+            }
+        }
+
+        if (invalidatedBearers.includes(req.headers.authorization)) { // Avoid making requests for known bad tokens
+            debug('Unauthorized - Invalid Token [Listed]');
+            res.status(401).send('Unauthorized - Invalid Token [Listed]');
             return false;
         }
 
@@ -176,20 +228,9 @@ async function checkDashAuth(req, res) {
                 authIdTable[req.headers.authorization] = userId;
             }
 
-            if (!fs.existsSync(`./data/activity`)) await fsp.mkdir(`./data/activity`);
-            const actionObj = {
-                action: `${req.method}:${req.path}`,
-                ts: Date.now(),
-                executor: userId,
-                id: req.id
-            };
-
-            if (!fs.existsSync(`./data/activity/${req.query.guild}.json`)) return await fsp.appendFile(`./data/activity/${req.query.guild}.json`, JSON.stringify([actionObj]));
-            const activity = JSON.parse(await fsp.readFile(`./data/activity/${req.query.guild}.json`, 'utf-8'));
-            activity.push(actionObj);
-
-            if (activity.length > 25) activity.shift(); // Limit the activity log to x entries
-            await fsp.writeFile(`./data/activity/${req.query.guild}.json`, JSON.stringify(activity));
+            await pushActivity({
+                executor: userId
+            });
         }
 
         debug(`Looking for cached user`);
