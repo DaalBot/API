@@ -649,13 +649,13 @@
             "sort": 0
         },
         {
-            "path": "routes/dashboard/post/database/create.js",
-            "description": "Creates a new database for a guild.",
+            "path": "routes/dashboard/post/database/write.js",
+            "description": "Writes a file in the managed database of the guild.",
             "method": "POST",
-            "route": "/dashboard/database/create",
+            "route": "/dashboard/database/write",
             "params": {
                 "guild": "ID of the guild",
-                "file": "Database file"
+                "body": "JSON - path: Path to the file, data: Content to write inside"
             },
             "restricted": true,
             "sort": 1

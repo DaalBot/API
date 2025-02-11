@@ -16,5 +16,5 @@ module.exports = async(req, res) => {
     const data = await tools.readFile(`/managed/${guild}/${path}`);
     if (!data) return res.status(404).json({ error: 'File not found / File is empty' });
 
-    res.send(data);
+    res.send(`${data}`); // Force string as otherwise express may interpret numbers as status codes
 }
