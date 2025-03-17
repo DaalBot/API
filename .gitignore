@@ -1,3 +1,6 @@
+# Temporary reference
+ref/
+
 # Data
 .env
 /data/
@@ -21,3 +24,6 @@ checks.js
 
 # Config (they're public however they may get overwritten by git)
 /config/*
+
+# Build
+dist/
