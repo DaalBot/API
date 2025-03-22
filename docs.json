@@ -1,0 +1,75 @@
+[
+  {
+    "method": "get",
+    "route": "/dashboard/auth/test",
+    "meta": {
+      "description": "Test if the current auth token is valid",
+      "body": {},
+      "query": {
+        "guild": {
+          "type": "string",
+          "description": "The ID of the guild to perform the action on",
+          "required": true
+        }
+      },
+      "authorization": "None"
+    },
+    "type": "Dashboard"
+  },
+  {
+    "method": "get",
+    "route": "/ping",
+    "meta": {
+      "description": "Ping the server",
+      "body": null,
+      "query": null,
+      "authorization": "None"
+    },
+    "type": "Public"
+  },
+  {
+    "method": "get",
+    "route": "/users/current",
+    "meta": {
+      "description": "Returns the data of the current user",
+      "body": null,
+      "query": null,
+      "authorization": "User"
+    },
+    "type": "Public"
+  },
+  {
+    "method": "post",
+    "route": "/auth/guild",
+    "meta": {
+      "description": "Add or override a guild key",
+      "body": null,
+      "query": {
+        "guild": {
+          "description": "The guild ID to generate the key for",
+          "type": "string",
+          "required": true
+        }
+      },
+      "authorization": "Locked"
+    },
+    "type": "Internal"
+  },
+  {
+    "method": "post",
+    "route": "/auth/user",
+    "meta": {
+      "description": "Add or override a users access token in the database",
+      "body": {
+        "token": {
+          "description": "The new token to apply to the user",
+          "type": "string",
+          "required": true
+        }
+      },
+      "query": null,
+      "authorization": "None"
+    },
+    "type": "Public"
+  }
+]
