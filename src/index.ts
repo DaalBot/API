@@ -4,6 +4,7 @@ import tools from '$lib/tools';
 import type { RouteMetadata } from '$lib/types';
 import crypto from 'crypto';
 import fs from 'fs/promises';
+import fss from 'fs';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import bodyParser from 'body-parser';
 const app: express.Application = express();
@@ -28,6 +29,24 @@ function convertRouteToFile(req: express.Request): string {
     file += `${req.path.replace(`/dashboard`, '')}`;
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
+
+    if (!fss.existsSync(`${file}.ts`)) {
+        // If the file doesn't exist, check for if its a dynamic route
+        function readPreviousDir(path: string) {
+            const segments = path.split('/');
+            segments.pop();
+            return fss.readdirSync(`${__dirname}/routes${segments.join('/')}`, { withFileTypes: true });
+        }
+
+        function checkPreviousDir(path: string) {
+            const fileList = readPreviousDir(path);
+
+            if (fileList.find((f) => f.name.startsWith('['))) {
+                // @ts-ignore - Are you fucking stupid?
+                return fileList.find((f) => f.name.startsWith('[')).name;
+            }
+        }
+    }
 
     return file;
 }
@@ -283,7 +302,7 @@ async function handleDashboardRequest(req: express.Request, res: express.Respons
         const routeData = await import(`${convertRouteToFile(req)}`);
         const result = await routeData.exec(req, res);
 
-        if (result) res.json({
+        if (result && !res.headersSent) res.json({
             ok: true,
             data: result
         });
