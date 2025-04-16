@@ -10,7 +10,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: test
     steps:
     - name: Update files
@@ -23,7 +23,7 @@ jobs:
         curl -X POST "https://api.daalbot.xyz/post/api/restart?auth=${{ secrets.API_KEY }}"
 
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
