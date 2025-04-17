@@ -2,6 +2,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "NODE_ENV=production node -r tsconfig-paths/register dist/index.js",
+    "generate:docs": "tsx tools/generateDocs.ts",
     "dev": "nodemon"
   },
   "dependencies": {
