@@ -7,7 +7,7 @@ export const meta: RouteMetadata = {
     body: null,
     query: {
         path: {
-            description: 'The path of the file to delete (relative to guild root)',
+            description: 'The path of the file to remove (relative to guild root)',
             type: 'string',
             required: false
         }

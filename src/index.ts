@@ -30,23 +30,23 @@ function convertRouteToFile(req: express.Request): string {
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
 
-    if (!fss.existsSync(`${file}.ts`)) {
-        // If the file doesn't exist, check for if its a dynamic route
-        function readPreviousDir(path: string) {
-            const segments = path.split('/');
-            segments.pop();
-            return fss.readdirSync(`${__dirname}/routes${segments.join('/')}`, { withFileTypes: true });
-        }
+    //// if (!fss.existsSync(`${file}.ts`)) {
+    ////     // If the file doesn't exist, check for if its a dynamic route
+    ////     function readPreviousDir(path: string) {
+    ////         const segments = path.split('/');
+    ////         segments.pop();
+    ////         return fss.readdirSync(`${__dirname}/routes${segments.join('/')}`, { withFileTypes: true });
+    ////     }
 
-        function checkPreviousDir(path: string) {
-            const fileList = readPreviousDir(path);
+    ////     function checkPreviousDir(path: string) {
+    ////         const fileList = readPreviousDir(path);
 
-            if (fileList.find((f) => f.name.startsWith('['))) {
-                // @ts-ignore - Are you fucking stupid?
-                return fileList.find((f) => f.name.startsWith('[')).name;
-            }
-        }
-    }
+    ////         if (fileList.find((f) => f.name === 'overrides.json')) {
+    ////             // @ts-ignore - Are you fucking stupid?
+    ////             return fileList.find((f) => f.name == 'overrides.json');
+    ////         }
+    ////     }
+    //// }
 
     return file;
 }
@@ -349,5 +349,5 @@ app.post('*', async(req, res) => {handleRequest(req, res)});
 app.delete('*', async(req, res) => {handleRequest(req, res)});
 
 app.listen(process.env.PORT || 3001, () => {
-    console.log(`Server is running on port ${process.env.PORT || 3001}`);
+    console.log(`Server started on port ${process.env.PORT || 3001}`);
 });
