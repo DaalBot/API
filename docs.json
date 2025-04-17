@@ -1,75 +1,374 @@
 [
-  {
-    "method": "get",
-    "route": "/dashboard/auth/test",
-    "meta": {
-      "description": "Test if the current auth token is valid",
-      "body": {},
-      "query": {
-        "guild": {
-          "type": "string",
-          "description": "The ID of the guild to perform the action on",
-          "required": true
-        }
-      },
-      "authorization": "None"
+    {
+        "method": "delete",
+        "route": "/dashboard/autorole",
+        "meta": {
+            "description": "Deletes an automatically assigned role from the server.",
+            "body": null,
+            "query": {
+                "role": {
+                    "description": "The role ID to delete.",
+                    "type": "string",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": "Deleted autorole"
+        },
+        "type": "Dashboard"
     },
-    "type": "Dashboard"
-  },
-  {
-    "method": "get",
-    "route": "/ping",
-    "meta": {
-      "description": "Ping the server",
-      "body": null,
-      "query": null,
-      "authorization": "None"
+    {
+        "method": "delete",
+        "route": "/dashboard/database",
+        "meta": {
+            "description": "Delete a item from managed storage",
+            "body": null,
+            "query": {
+                "path": {
+                    "description": "The path of the file to remove (relative to guild root)",
+                    "type": "string",
+                    "required": false
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": "Deleted data"
+        },
+        "type": "Dashboard"
     },
-    "type": "Public"
-  },
-  {
-    "method": "get",
-    "route": "/users/current",
-    "meta": {
-      "description": "Returns the data of the current user",
-      "body": null,
-      "query": null,
-      "authorization": "User"
+    {
+        "method": "delete",
+        "route": "/dashboard/events/variables",
+        "meta": {
+            "description": "Remove a variable from an event",
+            "body": null,
+            "query": {
+                "scope": {
+                    "description": "The scope of the event. Can be either \"global\" or a event ID.",
+                    "type": "string",
+                    "required": true
+                },
+                "name": {
+                    "description": "The name of the variable to delete.",
+                    "type": "string",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": "Deleted event variable"
+        },
+        "type": "Dashboard"
     },
-    "type": "Public"
-  },
-  {
-    "method": "post",
-    "route": "/auth/guild",
-    "meta": {
-      "description": "Add or override a guild key",
-      "body": null,
-      "query": {
-        "guild": {
-          "description": "The guild ID to generate the key for",
-          "type": "string",
-          "required": true
-        }
-      },
-      "authorization": "Locked"
+    {
+        "method": "delete",
+        "route": "/dashboard/events",
+        "meta": {
+            "description": "Deletes a event given the event ID",
+            "body": null,
+            "query": {
+                "id": {
+                    "description": "The event ID to delete",
+                    "type": "string",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": "Deleted event"
+        },
+        "type": "Dashboard"
     },
-    "type": "Internal"
-  },
-  {
-    "method": "post",
-    "route": "/auth/user",
-    "meta": {
-      "description": "Add or override a users access token in the database",
-      "body": {
-        "token": {
-          "description": "The new token to apply to the user",
-          "type": "string",
-          "required": true
-        }
-      },
-      "query": null,
-      "authorization": "None"
+    {
+        "method": "delete",
+        "route": "/dashboard/xp/reward",
+        "meta": {
+            "description": "Delete a reward for reaching a certain level",
+            "body": null,
+            "query": {
+                "level": {
+                    "type": "string",
+                    "description": "The level of the reward to remove",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": "Deleted XP reward"
+        },
+        "type": "Dashboard"
     },
-    "type": "Public"
-  }
+    {
+        "method": "get",
+        "route": "/dashboard/activity",
+        "meta": {
+            "description": "Get the latest actions performed through the API for the server. (excl. GET Requests)",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/auth/test",
+        "meta": {
+            "description": "Test if the current auth token is valid",
+            "body": {},
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/autorole",
+        "meta": {
+            "description": "Get the current automatically granted roles",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/database",
+        "meta": {
+            "description": "Get a file from the servers managed storage",
+            "body": null,
+            "query": {
+                "path": {
+                    "description": "The path of the file to delete (relative to managed guild root)",
+                    "type": "string",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/events/code",
+        "meta": {
+            "description": "Read the code of a event",
+            "body": null,
+            "query": {
+                "id": {
+                    "description": "The ID of the event to get the code of",
+                    "type": "string",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/events/variable",
+        "meta": {
+            "description": "Get variables for events by scope",
+            "body": null,
+            "query": {
+                "scope": {
+                    "description": "The scope of the variable to get",
+                    "type": "string",
+                    "required": true
+                },
+                "name": {
+                    "description": "The name of the variable to get",
+                    "type": "string",
+                    "required": false
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/events",
+        "meta": {
+            "description": "Get events from the current server",
+            "body": null,
+            "query": {
+                "id": {
+                    "description": "The ID of the event to get data on",
+                    "type": "string",
+                    "required": false
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/guild/channels",
+        "meta": {
+            "description": "Get the channels of current guild",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/guild",
+        "meta": {
+            "description": "Get data for current guild",
+            "body": null,
+            "query": {
+                "basic": {
+                    "description": "Whether to only include basic data such as name, icon, and id",
+                    "type": "boolean",
+                    "required": false
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/ping",
+        "meta": {
+            "description": "Ping the server",
+            "body": null,
+            "query": null,
+            "authorization": "None",
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
+        "route": "/users/current",
+        "meta": {
+            "description": "Returns the data of the current user",
+            "body": null,
+            "query": null,
+            "authorization": "User",
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "post",
+        "route": "/auth/guild",
+        "meta": {
+            "description": "Add or override a guild key",
+            "body": null,
+            "query": {
+                "guild": {
+                    "description": "The guild ID to generate the key for",
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "authorization": "Locked",
+            "comment": null
+        },
+        "type": "Internal"
+    },
+    {
+        "method": "post",
+        "route": "/auth/user",
+        "meta": {
+            "description": "Add or override a users access token in the database",
+            "body": {
+                "token": {
+                    "description": "The new token to apply to the user",
+                    "type": "string",
+                    "required": true
+                }
+            },
+            "query": null,
+            "authorization": "Locked",
+            "comment": null
+        },
+        "type": "Internal"
+    }
 ]
