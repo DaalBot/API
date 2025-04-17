@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-export async function get(path: string, headers?: Record<string, string>): Promise<string> {
+export async function get(path: string, headers?: Record<string, string>, raw?: boolean): Promise<string | AxiosResponse> {
     const response = await axios.get(`https://bot.daalbot.xyz${path}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -8,7 +8,8 @@ export async function get(path: string, headers?: Record<string, string>): Promi
             ...headers
         }
     });
-    return response.data;
+
+    return raw ? response : response.data;
 }
 
 export async function post(path: string, data: any = {}, headers?: Record<string, string>): Promise<string> {

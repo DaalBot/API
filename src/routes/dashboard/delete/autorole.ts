@@ -12,7 +12,8 @@ export const meta: RouteMetadata = {
             required: true
         }
     },
-    authorization: "None"
+    authorization: "None",
+    comment: 'Deleted autorole'
 }
 
 export async function exec(req: Request, res: Response) {

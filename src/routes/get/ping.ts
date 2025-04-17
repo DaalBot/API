@@ -4,9 +4,10 @@ export const meta: RouteMetadata = {
     description: 'Ping the server',
     body: null,
     query: null,
-    authorization: 'None'
+    authorization: 'None',
+    comment: null
 }
 
-async function exec() {
-    return 'pong';
+export async function exec(req: Request, res: Response) {
+    return 'Pong!';
 }

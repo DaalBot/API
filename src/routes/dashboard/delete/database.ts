@@ -12,7 +12,8 @@ export const meta: RouteMetadata = {
             required: false
         }
     },
-    authorization: 'None'
+    authorization: 'None',
+    comment: 'Deleted data'
 };
 
 export async function exec(req: Request, res: Response) {

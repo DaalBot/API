@@ -13,13 +13,18 @@ export const meta: RouteMetadata = {
             required: true
         }
     },
-    authorization: 'Locked'
+    authorization: 'Locked',
+    comment: null
 }
 
 export async function exec(req: express.Request, res: express.Response) {
     const trustedKeyStore: { guilds: {id: string, token: string}[], users: {id: string, token: string}[] } = JSON.parse(await fs.readFile(`${process.env.DB_DIR}/auth.json`, 'utf-8'));
 
-    const newKey = crypto.randomBytes(32).toString('base64');
+    const newKey = req.body.token as string;
+
+    if (!newKey || typeof newKey !== 'string') {
+        return res.status(400).json({ error: 'Invalid or missing token in request body' });
+    }
     const guildKeyObj = {
         id: crypto.createHash('sha256').update(req.query.guild as string).digest('hex'),
         token: crypto.createHash('sha256').update(newKey).digest('hex')

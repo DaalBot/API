@@ -6,7 +6,8 @@ export const meta: RouteMetadata = {
     description: "Returns the data of the current user",
     body: null,
     query: null,
-    authorization: "User"
+    authorization: "User",
+    comment: null
 }
 
 export async function exec(req: Request, res: Response) {

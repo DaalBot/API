@@ -2,6 +2,7 @@ import type { RouteMetadata } from '$lib/types';
 import express from 'express';
 import crypto from 'crypto';
 import fs from 'fs/promises';
+import tools from '$lib/tools';
 
 export const meta: RouteMetadata = {
     description: 'Add or override a users access token in the database',
@@ -13,7 +14,8 @@ export const meta: RouteMetadata = {
         }
     },
     query: null,
-    authorization: 'None'
+    authorization: 'Locked',
+    comment: null
 }
 
 export async function exec(req: express.Request, res: express.Response) {
@@ -22,8 +24,13 @@ export async function exec(req: express.Request, res: express.Response) {
     if (!req.body.token) return res.status(400).json({ error: 'Missing token' });
     
     const newKey = req.body.token as string;
+    const user = await tools.getUserData({
+        accessToken: newKey,
+    });
+    if (!user) return res.status(400).json({ error: 'Invalid token' });
+
     const userKeyObj = {
-        id: crypto.createHash('sha256').update(req.query.guild as string).digest('hex'),
+        id: crypto.createHash('sha256').update(user.user.id).digest('hex'),
         token: crypto.createHash('sha256').update(newKey).digest('hex')
     }
 
@@ -35,7 +42,5 @@ export async function exec(req: express.Request, res: express.Response) {
 
     await fs.writeFile(`${process.env.DB_DIR}/auth.json`, JSON.stringify(newKeyStore));
 
-    return {
-        key: newKey
-    };
+    return 'Success';
 }

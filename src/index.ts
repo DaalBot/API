@@ -150,6 +150,10 @@ async function checkMetaAuth(req: express.Request, res: express.Response): Promi
 }
 
 async function checkDashboardAuth(req: express.Request, res: express.Response): Promise<boolean> {
+    if (process.env.DANGEROUS_BYPASS_DASH_AUTH_SERIOUSLY_NEVER_USE_THIS_IN_PROD_LIKE_EVER == 'true' && process.env.DEV == '1') return true; // Testing only (obviously)
+    if (process.env.DANGEROUS_BYPASS_DASH_AUTH_SERIOUSLY_NEVER_USE_THIS_IN_PROD_LIKE_EVER === 'true' && process.env.DEV != '1') {
+        throw new Error('DANGEROUS_BYPASS_DASH_AUTH flag must not be enabled in production.');
+    }
     if (!req.query.guild || !req.headers.authorization) return false; // If the request doesn't have a guild ID or an authorization header, return false
     if (!req.headers.authorization.startsWith('User ') && !req.headers.authorization.startsWith('Guild ')) return false;
 
@@ -306,6 +310,27 @@ async function handleDashboardRequest(req: express.Request, res: express.Respons
             ok: true,
             data: result
         });
+
+        // Log the request
+        if (req.method != 'GET') {
+            const logPath = `${process.env.DB_DIR}/activity/${req.query.guild}.json`;
+            const currentActivity: {method:string,route:string,ts:number,executor:string,comment:string|null}[] = JSON.parse(fss.existsSync(logPath) ? await fs.readFile(logPath, 'utf8') : '[]');
+            let newData = currentActivity;
+
+            newData.push({
+                method: req.method,
+                route: req.path,
+                ts: Date.now(),
+                executor: req.headers.authorization?.startsWith('Guild ') ? '0' : ((await tools.getUserData({
+                    accessToken: req.headers.authorization?.split(' ')[1]
+                }))?.user.id || '-1'),
+                comment: routeData.comment || null
+            })
+
+            if (newData.length > 25) newData.shift();
+
+            await fs.writeFile(logPath, JSON.stringify(newData), 'utf8');
+        }
     } catch (e) {
         console.error(e);
         res.status(500).json({
@@ -323,6 +348,6 @@ app.get('*', async(req, res) => {handleRequest(req, res)});
 app.post('*', async(req, res) => {handleRequest(req, res)});
 app.delete('*', async(req, res) => {handleRequest(req, res)});
 
-app.listen(3001, () => {
-    console.log('Server is running on port 3000');
+app.listen(process.env.PORT || 3001, () => {
+    console.log(`Server is running on port ${process.env.PORT || 3001}`);
 });

@@ -5,7 +5,8 @@ export const meta: RouteMetadata = {
     description: 'Test if the current auth token is valid',
     body: {},
     query: null,
-    authorization: 'None'
+    authorization: 'None',
+    comment: null
 };
 
 export async function exec(req: Request, res: Response) {
