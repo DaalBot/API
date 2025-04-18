@@ -4,8 +4,8 @@ on:
   push:
     branches:
       '*'
-    paths-ignore:
-      - 'test.yml'
+    paths:
+      'routes/'
   workflow_dispatch:
 
 permissions:
