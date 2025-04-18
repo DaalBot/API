@@ -5,7 +5,7 @@ on:
     branches:
       '*'
     paths:
-      'routes/'
+      'src/routes/**'
   workflow_dispatch:
 
 permissions:
