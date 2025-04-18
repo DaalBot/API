@@ -4,6 +4,7 @@ require('dotenv').config();
 const port = process.env.PORT || 3000;
 const fs = require('fs');
 const fsp = require('fs').promises;
+const path = require('path');
 const http = require('http');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -418,11 +419,16 @@ app.post('/post/:category/:item', async(req, res) => {
     const category = req.params.category;
     const item = req.params.item;
     try {
-        const file = `./routes/post/${category}/${item}.js`;
+        const ROOT = path.resolve(__dirname, './routes/post');
+        const file = path.resolve(ROOT, category, `${item}.js`);
+        if (!file.startsWith(ROOT)) {
+            res.status(400).send('Invalid path');
+            return;
+        }
         const checksPassed = await onReqChecks(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
-        const route = require(`./routes/post/${category}/${item}.js`);
+        const route = require(file);
         const executingAt = Date.now();
         debug(`Executing route`);
         await route(req, res);
