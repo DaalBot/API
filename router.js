@@ -340,8 +340,8 @@ async function checkDashAuth(req, res) {
 // ====== API ROUTING ======
 // =========================
 
-app.get('/dashboard/:category/:action', async (req, res) => {
-    console.log('GET /dashboard/:category/:action');
+async function handleDashboardRequest(req, res) {
+    console.log(`${req.method} /dashboard/:category/:action`);
     const isAuthorized = await checkDashAuth(req, res);
     if (!isAuthorized) {
         return;
@@ -351,12 +351,21 @@ app.get('/dashboard/:category/:action', async (req, res) => {
     const action = req.params.action;
 
     try {
-        const route = require(`./routes/dashboard/get/${category}/${action}.js`);
+        const ROOT = path.resolve(__dirname, `./routes/dashboard/${req.method.toLowerCase()}`);
+        const file = path.resolve(ROOT, category, `${action}.js`);
+        if (!file.startsWith(ROOT)) {
+            res.status(400).send('Invalid path');
+            return;
+        }
+        const route = require(file);
         await route(req, res);
     } catch (error) {
         console.error(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
+}
+
+app.get('/dashboard/:category/:action', async (req, res) => {
 });
 
 app.post('/dashboard/:category/:action', bodyParser.json(), async(req, res) => {
@@ -393,33 +402,13 @@ app.delete('/dashboard/:category/:action', async(req, res) => {
     }
 });
 
-app.get('/get/:category/:item', async(req, res) => {
-    debug(`GET ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
+async function handleStandardRequest(req, res) {
+    debug(`${req.method} ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
     let category = req.params.category;
     let item = req.params.item;
 
     try {
-        const file = `./routes/get/${category}/${item}.js`;
-        const checksPassed = await onReqChecks(req, res, file);
-        debug(`Checks passed: ${checksPassed}`);
-        if (!checksPassed) return;
-        const route = require(`./routes/get/${category}/${item}.js`);
-        const executingAt = Date.now();
-        debug(`Executing route`);
-        await route(req, res);
-        debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.post('/post/:category/:item', async(req, res) => {
-    debug(`POST ${req.params.category}/${req.params.item} (${req.headers['user-agent']})`);
-    const category = req.params.category;
-    const item = req.params.item;
-    try {
-        const ROOT = path.resolve(__dirname, './routes/post');
+        const ROOT = path.resolve(__dirname, `./routes/${req.method.toLowerCase()}`);
         const file = path.resolve(ROOT, category, `${item}.js`);
         if (!file.startsWith(ROOT)) {
             res.status(400).send('Invalid path');
@@ -437,6 +426,14 @@ app.post('/post/:category/:item', async(req, res) => {
         console.error(error);
         res.status(500).send('Internal Server Error');
     }
+};
+
+app.get('/get/:category/:item', async(req, res) => {
+    await handleStandardRequest(req, res);
+});
+
+app.post('/post/:category/:item', async(req, res) => {
+    await handleStandardRequest(req, res);
 });
 
 app.get('/config/:option', (req, res) => {
