@@ -449,11 +449,19 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
     debug(`POST render/${req.params.item} (${req.headers['user-agent']})`);
     const item = req.params.item;
     try {
-        const file = `./routes/render/${item}.js`;
+        const baseDir = path.resolve(__dirname, './routes/render');
+        const file = path.resolve(baseDir, `${item}.js`);
+
+        // Ensure the resolved path is within the intended directory
+        if (!file.startsWith(baseDir)) {
+            res.status(400).send('Invalid item parameter');
+            return;
+        }
+
         const checksPassed = await onReqChecks(req, res, file);
         debug(`Checks passed: ${checksPassed}`);
         if (!checksPassed) return;
-        const route = require(`./routes/render/${item}.js`);
+        const route = require(file);
         const executingAt = Date.now();
         debug(`Executing route`);
         await route(req, res);
