@@ -366,40 +366,16 @@ async function handleDashboardRequest(req, res) {
 }
 
 app.get('/dashboard/:category/:action', async (req, res) => {
+    await handleDashboardRequest(req, res);
 });
 
 app.post('/dashboard/:category/:action', bodyParser.json(), async(req, res) => {
-    const isAuthorized = await checkDashAuth(req, res);
-    if (!isAuthorized) {
-        return;
-    }
-
-    const category = req.params.category;
-    const action = req.params.action;
-
-    try {
-        res.header('Access-Control-Allow-Origin', '*');
-        const route = require(`./routes/dashboard/post/${category}/${action}.js`);
-        route(req, res);
-    } catch (error) {
-        debug(`Error: ${error}`);
-        res.status(500).send('Internal Server Error');
-    }
+    res.header('Access-Control-Allow-Origin', '*');
+    await handleDashboardRequest(req, res);
 });
 
 app.delete('/dashboard/:category/:action', async(req, res) => {
-    if (!(await checkDashAuth(req, res))) return;
-    // User has permission to manage this guild
-    const category = req.params.category;
-    const action = req.params.action;
-        
-    try {
-        const route = require(`./routes/dashboard/delete/${category}/${action}.js`);
-        route(req, res);
-    } catch (error) {
-        debug(`Error: ${error}`);
-        res.status(500).send('Internal Server Error');
-    }
+    await handleDashboardRequest(req, res);
 });
 
 async function handleStandardRequest(req, res) {
