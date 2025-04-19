@@ -15,6 +15,16 @@ export const meta: RouteMetadata = {
     },
     query: null,
     authorization: 'Locked',
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'Success'
+        }],
+        400: [{
+            type: 'string',
+            example: 'Invalid token'
+        }]
+    },
     comment: null
 }
 

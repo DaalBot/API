@@ -13,6 +13,16 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'Array<{ id: string, name: string, description: string, on: string, guild: string, enabled: boolean }>',
+            example: `[{"id":"x-xxxxx-xxxxx-xxxxx","guild":"[Guild ID]","on":"messageCreate","name":"Dummy event","description":"This is a dummy event","enabled":true}]`
+        }],
+        404: [{
+            type: 'string',
+            example: `Event not found`
+        }],
+    },
     comment: null
 };
 
@@ -21,7 +31,7 @@ export async function exec(req: Request, res: Response) {
 
     let eventsMaster = await tools.database.read(`/events/events.json`) as unknown as Array<{ id: string, name: string, description: string, on: string, guild: string, enabled: boolean }>;
     eventsMaster = eventsMaster.filter(e => e.guild === req.query.guild);
-    if (eventsMaster.length === 0) return res.status(404).json({ ok: false, error: 'No events found' });
+    if (eventsMaster.length === 0) return res.status(404).json({ ok: false, error: 'Event not found' });
 
     if (id) {
         const event = eventsMaster.find(e => e.id === id);

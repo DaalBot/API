@@ -18,6 +18,28 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'null',
+            example: null
+        }],
+        400: [{
+            type: 'string',
+            example: 'Missing required parameters.'
+        }],
+        404: [{
+            type: 'string',
+            example: 'Event not found.'
+        }],
+        403: [{
+            type: 'string',
+            example: 'You do not have permission to modify this event.'
+        }],
+        500: [{
+            type: 'string',
+            example: 'Failed to delete variable, are you sure it exists?'
+        }]
+    },
     comment: 'Deleted event variable'
 };
 
@@ -37,14 +59,14 @@ export async function exec(req: Request, res: Response) {
             return res.status(404).json({ ok: false, error: 'Event not found.' });
 
         if (foundEvent.guild !== guild)
-            return res.status(403).json({ ok: false, error: 'You do not have permission to delete this event.' });
+            return res.status(403).json({ ok: false, error: 'You do not have permission to modify this event.' });
     }
 
     const path = `/events/${scope == 'global' ? guild : scope}/${name}.var`;
 
     try {
         await tools.database.deleteFile(path);
-        return 'Successfully deleted variable';
+        return null;
     } catch (e) {
         return res.status(500).json({ ok: false, error: 'Failed to delete variable, are you sure it exists?' });
     }

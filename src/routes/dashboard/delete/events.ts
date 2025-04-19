@@ -13,6 +13,20 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'Successfully deleted event'
+        }],
+        400: [{
+            type: 'string',
+            example: 'Missing required parameter \'event\'.'
+        }],
+        404: [{
+            type: 'string',
+            example: 'Event not found'
+        }],
+    },
     comment: 'Deleted event'
 };
 

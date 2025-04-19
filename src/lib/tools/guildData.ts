@@ -1,6 +1,8 @@
 import type { RESTGetAPIGuildChannelsResult, RESTAPIPartialCurrentUserGuild, RESTGetAPIGuildMembersResult } from 'discord-api-types/v9';
+import type { Collection, GuildMember, Role } from 'discord.js/typings';
 import axios from 'axios';
 import tools from '$lib/tools';
+import { client } from '$app/index';
 
 const CACHE_TIME = 1000 * 60 * 60; // 1 hour
 
@@ -13,7 +15,8 @@ export interface GuildDataGetOptions {
 export interface CachedGuildData {
     userData: RESTAPIPartialCurrentUserGuild;
     channels: RESTGetAPIGuildChannelsResult;
-    members: RESTGetAPIGuildMembersResult;
+    members: Collection<string, GuildMember>;
+    roles: Collection<string, Role>;
     time: number;
     id: string;
 }
@@ -38,6 +41,10 @@ export default async function get(options: GuildDataGetOptions): Promise<CachedG
         if (!userData?.guilds?.find((g) => g.id === options.guildId))
             throw new Error('Guild not found. Please provide a valid guild ID.');
 
+        const DJSGuild = client.guilds.cache.get(options.guildId);
+        if (!DJSGuild) 
+            throw new Error('Guild not found in cache. Please provide a valid guild ID.');
+
         const channelsReq = await axios.get(`https://discord.com/api/v9/guilds/${options.guildId}/channels`, {
             headers: {
                 Authorization: `Bot ${process.env.TOKEN}`
@@ -46,16 +53,13 @@ export default async function get(options: GuildDataGetOptions): Promise<CachedG
 
         const channels = channelsReq.data as RESTGetAPIGuildChannelsResult;
 
-        const membersReq = await axios.get(`https://discord.com/api/v9/guilds/${options.guildId}/members`, {
-            headers: {
-                Authorization: `Bot ${process.env.TOKEN}`
-            }
-        });
-        const members = membersReq.data as RESTGetAPIGuildMembersResult;
+        const members = await DJSGuild.members.fetch();
+        const roles = DJSGuild.roles.cache;
 
-        const cacheData = {
+        const cacheData: CachedGuildData = {
             channels,
             members,
+            roles,
             time: Date.now(),
             id: options.guildId,
             userData: userData.guilds.find((g) => g.id === options.guildId) as RESTAPIPartialCurrentUserGuild

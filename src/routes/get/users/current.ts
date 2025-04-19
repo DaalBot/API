@@ -7,6 +7,7 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: "User",
+    returns: {}, // TODO: Define the return type
     comment: null
 }
 

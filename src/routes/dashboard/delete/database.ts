@@ -13,6 +13,16 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'null',
+            example: null
+        }],
+        400: [{
+            type: 'string',
+            example: `File not found`
+        }]
+    },
     comment: 'Deleted data'
 };
 
@@ -22,7 +32,7 @@ export async function exec(req: Request, res: Response) {
     if (!path) res.status(400).json({ ok: false, error: 'Missing path query parameter' });
 
     // Send off the request to delete the file
-    const result = await tools.database.deleteFile(`/managed/${guild}/${path}`);
+    await tools.database.deleteFile(`/managed/${guild}/${path}`);
     
-    return result;
+    return null;
 }

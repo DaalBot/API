@@ -18,6 +18,16 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'Array<{ name: string, value: string }>',
+            example: `[{"name":"variable","value":"value"}]`
+        }],
+        404: [{
+            type: 'string',
+            example: `Variable not found`
+        }]
+    },
     comment: null
 };
 

@@ -7,7 +7,14 @@ import fs from 'fs/promises';
 import fss from 'fs';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import bodyParser from 'body-parser';
+import { Client, IntentsBitField } from 'discord.js';
 const app: express.Application = express();
+
+const intents = new IntentsBitField([
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages
+]);
 
 interface TrustedKeyStore {
     users: Array<{ id: string, token: string }>;
@@ -351,3 +358,11 @@ app.delete('*', async(req, res) => {handleRequest(req, res)});
 app.listen(process.env.PORT || 3001, () => {
     console.log(`Server started on port ${process.env.PORT || 3001}`);
 });
+
+const client = new Client({
+    intents: intents
+});
+
+client.login(process.env.TOKEN);
+
+export { app, client };

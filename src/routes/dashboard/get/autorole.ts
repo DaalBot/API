@@ -7,6 +7,12 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'Array<string>',
+            example: null
+        }]
+    },
     comment: null
 };
 

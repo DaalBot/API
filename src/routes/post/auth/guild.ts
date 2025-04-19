@@ -14,6 +14,16 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'Locked',
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'The new key'
+        }],
+        400: [{
+            type: 'string',
+            example: 'Invalid or missing token in request body'
+        }],
+    },
     comment: null
 }
 

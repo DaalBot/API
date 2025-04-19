@@ -14,6 +14,23 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'string',
+            example: null
+        }],
+        404: [{
+            type: 'string',
+            example: `File not found`
+        }],
+        500: [{
+            type: 'string',
+            example: `Internal server error during file read`
+        }, {
+            type: 'string',
+            example: `Internal server error`
+        }]
+    },
     comment: null
 };
 

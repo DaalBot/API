@@ -8,6 +8,12 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: 'None',
+    returns: {
+        200: [{
+            type: `Array<{ method: string, route: string, ts: number, executor: string, comment: string }>`,
+            example: null
+        }]
+    },
     comment: null
 };
 

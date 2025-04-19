@@ -13,6 +13,16 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
+    returns: {
+        200: [{
+            type: 'string',
+            example: null
+        }],
+        404: [{
+            type: 'string',
+            example: `Event not found (are you sure you have permission to edit it?)`
+        }],
+    },
     comment: null
 };
 

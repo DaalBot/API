@@ -13,6 +13,24 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: "None",
+    returns: {
+        200: [{
+            type: "string",
+            example: "Successfully deleted autorole"
+        }],
+        400: [{
+            type: "string",
+            example: "Missing required parameter 'role'."
+        }],
+        404: [{
+            type: "string",
+            example: "Autorole not found"
+        }],
+        500: [{
+            type: "string",
+            example: "Failed to delete autorole, are you sure it exists?"
+        }]
+    },
     comment: 'Deleted autorole'
 }
 
