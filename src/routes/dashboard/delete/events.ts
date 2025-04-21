@@ -36,7 +36,7 @@ export async function exec(req: Request, res: Response) {
 
     const eventsMaster = await tools.database.read(`/events/events.json`) as unknown as Array<{ id: string, name: string, description: string, on: string, guild: string, enabled: boolean }>;
 
-    const event = eventsMaster.find(e => e.id === id);
+    const event = eventsMaster.find(e => e.id === id && e.guild === req.query.guild);
     if (!event) return res.status(404).json({ ok: false, error: 'Event not found' });
 
     eventsMaster.splice(eventsMaster.indexOf(event), 1);

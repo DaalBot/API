@@ -27,3 +27,6 @@ checks.js
 
 # Build
 dist/
+
+# Duplicates of DaalBot/Discord ignored files
+src/lib/checks.ts

@@ -17,5 +17,5 @@ export const meta: RouteMetadata = {
 };
 
 export async function exec(req: Request, res: Response) {
-    return 'pong!';
+    return 'pong';
 }

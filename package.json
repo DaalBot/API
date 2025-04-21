@@ -1,12 +1,14 @@
 {
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "NODE_ENV=production node -r tsconfig-paths/register dist/index.js",
+    "start": "NODE_ENV=production node dist/index.js",
     "generate:docs": "tsx tools/generateDocs.ts",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "test": "NODE_ENV=test PORT=3000 DEV=1 tsx tests/entry.ts"
   },
   "dependencies": {
     "@types/node": "^22.13.10",
+    "abstract-syntax-tree": "^2.22.0",
     "axios": "^1.8.3",
     "body-parser": "^1.20.3",
     "discord.js": "^14.18.0",

@@ -10,6 +10,12 @@ import bodyParser from 'body-parser';
 import { Client, IntentsBitField } from 'discord.js';
 const app: express.Application = express();
 
+interface Route {
+    method: string;
+    route: string;
+    matches: RegExp;
+}
+
 const intents = new IntentsBitField([
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
@@ -21,6 +27,62 @@ interface TrustedKeyStore {
     guilds: Array<{ id: string, token: string }>;
 }
 
+let routes: Route[] = [];
+
+async function getFileList(path: string): Promise<string[]> {
+    const files = await fs.readdir(path, { withFileTypes: true });
+    const fileList: string[] = [];
+    
+    for (const file of files) {
+        if (file.isDirectory()) {
+            fileList.push(...await getFileList(`${path}/${file.name}`));
+        } else {
+            fileList.push(`${path}/${file.name}`);
+        }
+    }
+    
+    return fileList;
+}
+
+console.log('Starting route scanning...');
+(async() => { // Load all routes into array
+    // Regular routes
+    let methods = (await fs.readdir(`${__dirname}/routes`)).filter(dir => dir != 'dashboard');
+    for (const method of methods) {
+        const methodRoutes = await getFileList(`${__dirname}/routes/${method}`);
+
+        for (let i = 0; i < methodRoutes.length; i++) {
+            const file = methodRoutes[i];
+            const route: Route = {
+                method: method.toUpperCase(),
+                route: file.replace(`${__dirname}/routes`, '').replace('.ts', ''),
+                matches: new RegExp(`${file.replace(`${__dirname}/routes`, '').replace('.ts', '').replace('+dynamic', '.*')}\/`)
+            };
+
+            routes.push(route);
+        }
+    }
+
+    methods = (await fs.readdir(`${__dirname}/routes/dashboard`));
+
+    for (const method of methods) {
+        const methodRoutes = await getFileList(`${__dirname}/routes/dashboard/${method}`);
+
+        for (let i = 0; i < methodRoutes.length; i++) {
+            const file = methodRoutes[i];
+            const route: Route = {
+                method: method.toUpperCase(),
+                route: file.replace(`${__dirname}/routes`, '').replace('.ts', ''),
+                matches: new RegExp(`${file.replace(`${__dirname}/routes`, '').replace('.ts', '').replace('+dynamic', '.*')}\/`)
+            };
+
+            routes.push(route);
+        }
+    }
+
+    console.log(`Found ${routes.length} routes`);
+})();
+
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
@@ -28,7 +90,7 @@ app.get('/', (req, res) => {
 });
 
 function convertRouteToFile(req: express.Request): string {
-    let file = './routes';
+    let file = `${__dirname}/routes`;
 
     if (req.path.startsWith('/dashboard/')) file += `/dashboard/${req.method.toLowerCase()}`;
     else file += `/${req.method.toLowerCase()}`;
@@ -37,28 +99,37 @@ function convertRouteToFile(req: express.Request): string {
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
 
-    //// if (!fss.existsSync(`${file}.ts`)) {
-    ////     // If the file doesn't exist, check for if its a dynamic route
-    ////     function readPreviousDir(path: string) {
-    ////         const segments = path.split('/');
-    ////         segments.pop();
-    ////         return fss.readdirSync(`${__dirname}/routes${segments.join('/')}`, { withFileTypes: true });
-    ////     }
+    console.log(file + '.ts');
+    if (!fss.existsSync(file + '.ts')) {
+        console.log('File not found, checking for dynamic routes');
+        const foundRoutes = routes.filter(r => (r.matches.test(file) && r.route.endsWith('+dynamic')));
 
-    ////     function checkPreviousDir(path: string) {
-    ////         const fileList = readPreviousDir(path);
+        foundRoutes.forEach(route => {
+            file = `${__dirname}/routes/${route.route}`;
 
-    ////         if (fileList.find((f) => f.name === 'overrides.json')) {
-    ////             // @ts-ignore - Are you fucking stupid?
-    ////             return fileList.find((f) => f.name == 'overrides.json');
-    ////         }
-    ////     }
-    //// }
+            console.log(`Found dynamic route: ${file}`);
+            if (!file.endsWith('+dynamic')) return file = ''; // False positive check
+        })
+
+        if (!fss.existsSync(file + '.ts')) {
+            throw new Error(`Route not found: ${file}`);
+        }
+    }
 
     return file;
 }
 
 async function checkMetaAuth(req: express.Request, res: express.Response): Promise<boolean> {
+    try {
+        convertRouteToFile(req);
+    } catch (e) {
+        res.status(404).json({
+            ok: false,
+            error: 'Route not found'
+        });
+        return false;
+    }
+
     const routeData = await import(`${convertRouteToFile(req)}`);
     const meta: RouteMetadata = routeData.meta;
 
@@ -363,6 +434,6 @@ const client = new Client({
     intents: intents
 });
 
-client.login(process.env.TOKEN);
+if (process.env.TOKEN) client.login(process.env.TOKEN);
 
 export { app, client };
