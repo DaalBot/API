@@ -99,15 +99,11 @@ function convertRouteToFile(req: express.Request): string {
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
 
-    console.log(file + '.ts');
     if (!fss.existsSync(file + '.ts')) {
-        console.log('File not found, checking for dynamic routes');
         const foundRoutes = routes.filter(r => (r.matches.test(file) && r.route.endsWith('+dynamic')));
 
         foundRoutes.forEach(route => {
             file = `${__dirname}/routes/${route.route}`;
-
-            console.log(`Found dynamic route: ${file}`);
             if (!file.endsWith('+dynamic')) return file = ''; // False positive check
         })
 
