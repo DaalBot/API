@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - 'ts-rewrite'
-    paths:
-      - 'src/routes/**'
+    # paths:
+    #   - 'src/routes/**'
 
 jobs:
   test:
