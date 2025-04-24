@@ -39,5 +39,5 @@ export async function exec(req: Request, res: Response) {
     if (!event) return res.status(404).json({ error: 'Event not found' });
     if (event.guild !== req.query.guild) return res.status(403).json({ error: 'You do not have permission to modify this event' });
 
-    // TODO: Add the padding to the file and write it
+    // TODO: Add the padding to the file and write it 
 }
