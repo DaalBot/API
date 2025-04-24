@@ -2,7 +2,7 @@ name: Generation
 run-name: ${{ github.actor }}
 on:
   workflow_run: 
-    workflows: ["Test"]
+    workflows: [Test]
     types:
       - completed
   workflow_dispatch:
