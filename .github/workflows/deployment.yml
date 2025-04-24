@@ -1,0 +1,43 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - 'ts-rewrite'
+    paths:
+      - 'src/routes/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Test API
+        run: |
+          npm ci
+          npm run test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update files
+        run: echo "Requesting pull" # Placeholder for actual deployment step when running on main branch
+
+      - name: Restart API
+        run: echo "Restarting API" # See above

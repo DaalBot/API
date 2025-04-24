@@ -1,10 +1,11 @@
 name: Generation
 run-name: ${{ github.actor }}
 on:
-  workflow_run: 
-    workflows: [Test]
-    types:
-      - completed
+  push:
+    branches:
+      - 'ts-rewrite'
+    paths:
+      - 'src/routes/**'
   workflow_dispatch:
 
 permissions:
@@ -13,7 +14,6 @@ permissions:
 jobs:
   docs:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     defaults:
       run:
         working-directory: .
