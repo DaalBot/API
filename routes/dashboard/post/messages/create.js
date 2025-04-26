@@ -9,29 +9,13 @@ const { WebhookClient, ActionRowBuilder, ChannelType } = require('discord.js');
 module.exports = async (req, res) => {
     const guild = req.query.guild;
     const channel = req.query.channel;
-    const data = req.body.message ?? JSON.parse(req.query.data ?? '{}');
+    const data = req.body.message;
 
     if (!guild || !channel)
         return res.status(400).send('Bad Request - Missing guild or channel');
         
-    let messagePayload = {};
+    let messagePayload = data;
     const webhook = JSON.parse(req.query.webhook ?? '{}');
-    
-    if (!req.query.v) {
-        const message = data.content;
-        const embed = data.embed;
-
-        if (!embed && !message)
-            return res.status(400).send('Bad Request - Missing content and embed');
-
-        messagePayload = {
-            content: message ? message : null,
-            embeds: embed ? [embed] : null,
-            // components: row ?? null
-        };
-    } else if (req.query.v == '2') {
-        messagePayload = data;
-    }
 
     if (!data.id) {
         if (!webhook.username) { // Send message as bot
@@ -45,8 +29,9 @@ module.exports = async (req, res) => {
             if (!webhookClient) return res.status(424).send('No available webhooks');
     
             webhookClient.send({
-                ...messagePayload,
-                ...webhook
+                body: messagePayload,
+                username: webhook.username,
+                avatarURL: webhook.avatarURL,
             });
         }
     } else {
@@ -68,7 +53,7 @@ module.exports = async (req, res) => {
             if (!webhookClient) return res.status(403).send('Forbidden - Do not have access to the author webhook');
 
             await webhookClient.editMessage(data.id, {
-                ...messagePayload,
+                body: messagePayload,
                 ...webhook
             });
         } else {

@@ -361,6 +361,7 @@ async function handleDashboardRequest(req, res) {
         await route(req, res);
     } catch (error) {
         console.error(`Error: ${error}`);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 }
@@ -400,6 +401,7 @@ async function handleStandardRequest(req, res) {
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
         console.error(error);
+        debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
 };
@@ -467,6 +469,7 @@ app.post('/render/:item', bodyParser.json(), async(req, res) => {
         await route(req, res);
         debug(`Route executed in ${(Date.now() - executingAt) / 1000}s`);
     } catch (error) {
+        console.error(error);
         debug(`Error: ${error}`);
         res.status(500).send('Internal Server Error');
     }
