@@ -1,6 +1,10 @@
 const client = require('../../../../client.js');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v10');
 const express = require('express');
 const { WebhookClient, ActionRowBuilder, ChannelType } = require('discord.js');
+
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 /**
  * @param {express.Request} req 
@@ -19,7 +23,9 @@ module.exports = async (req, res) => {
 
     if (!data.id) {
         if (!webhook.username) { // Send message as bot
-            client.guilds.cache.get(guild).channels.cache.get(channel).send(messagePayload);
+            await rest.post(Routes.channelMessages(channel), {
+                body: messagePayload
+            })
         } else { // Send message as webhook of bot
             const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
             /**
@@ -57,7 +63,9 @@ module.exports = async (req, res) => {
                 ...webhook
             });
         } else {
-            await messageObj.edit(messagePayload);
+            await rest.patch(Routes.channelMessage(channel, data.id), {
+                body: messagePayload
+            });
         }
     }
 
