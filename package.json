@@ -6,7 +6,7 @@
     "rfignored": "git rm -r --cached ."
   },
   "dependencies": {
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "discord.js": "^14.19.1",
