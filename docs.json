@@ -18,6 +18,32 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Successfully deleted autorole"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing required parameter 'role'."
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Autorole not found"
+                    }
+                ],
+                "500": [
+                    {
+                        "type": "string",
+                        "example": "Failed to delete autorole, are you sure it exists?"
+                    }
+                ]
+            },
             "comment": "Deleted autorole"
         },
         "type": "Dashboard"
@@ -41,6 +67,20 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "File not found"
+                    }
+                ]
+            },
             "comment": "Deleted data"
         },
         "type": "Dashboard"
@@ -69,6 +109,38 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing required parameters."
+                    }
+                ],
+                "403": [
+                    {
+                        "type": "string",
+                        "example": "You do not have permission to modify this event."
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found."
+                    }
+                ],
+                "500": [
+                    {
+                        "type": "string",
+                        "example": "Failed to delete variable, are you sure it exists?"
+                    }
+                ]
+            },
             "comment": "Deleted event variable"
         },
         "type": "Dashboard"
@@ -92,6 +164,26 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Successfully deleted event"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing required parameter 'event'."
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found"
+                    }
+                ]
+            },
             "comment": "Deleted event"
         },
         "type": "Dashboard"
@@ -115,6 +207,14 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ]
+            },
             "comment": "Deleted XP reward"
         },
         "type": "Dashboard"
@@ -133,6 +233,14 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "Array<{ method: string, route: string, ts: number, executor: string, comment: string }>",
+                        "example": null
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -151,6 +259,14 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Pong!"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -169,6 +285,14 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "Array<string>",
+                        "example": null
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -192,6 +316,30 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": null
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "File not found"
+                    }
+                ],
+                "500": [
+                    {
+                        "type": "string",
+                        "example": "Internal server error during file read"
+                    },
+                    {
+                        "type": "string",
+                        "example": "Internal server error"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -215,6 +363,20 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": null
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found (are you sure you have permission to edit it?)"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -243,6 +405,20 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "Array<{ name: string, value: string }>",
+                        "example": "[{\"name\":\"variable\",\"value\":\"value\"}]"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Variable not found"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
@@ -266,24 +442,20 @@
                 }
             },
             "authorization": "None",
-            "comment": null
-        },
-        "type": "Dashboard"
-    },
-    {
-        "method": "get",
-        "route": "/dashboard/guild/channels",
-        "meta": {
-            "description": "Get the channels of current guild",
-            "body": null,
-            "query": {
-                "guild": {
-                    "type": "string",
-                    "description": "The ID of the guild to perform the action on",
-                    "required": true
-                }
+            "returns": {
+                "200": [
+                    {
+                        "type": "Array<{ id: string, name: string, description: string, on: string, guild: string, enabled: boolean }>",
+                        "example": "[{\"id\":\"x-xxxxx-xxxxx-xxxxx\",\"guild\":\"[Guild ID]\",\"on\":\"messageCreate\",\"name\":\"Dummy event\",\"description\":\"This is a dummy event\",\"enabled\":true}]"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found"
+                    }
+                ]
             },
-            "authorization": "None",
             "comment": null
         },
         "type": "Dashboard"
@@ -295,9 +467,9 @@
             "description": "Get data for current guild",
             "body": null,
             "query": {
-                "basic": {
-                    "description": "Whether to only include basic data such as name, icon, and id",
-                    "type": "boolean",
+                "filter": {
+                    "description": "Data to filter by",
+                    "type": "Array<'members' | 'channels' | 'basic' | 'roles'>",
                     "required": false
                 },
                 "guild": {
@@ -307,18 +479,653 @@
                 }
             },
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "object",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Filter must be a (JSON) array"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Guild not found"
+                    }
+                ],
+                "500": [
+                    {
+                        "type": "string",
+                        "example": "getGuildData returned null"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
     },
     {
         "method": "get",
+        "route": "/dashboard/logs/channel",
+        "meta": {
+            "description": "Gets the current channel logs are sent to",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": null
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/logs/state",
+        "meta": {
+            "description": "Checks the current state of a gateway event in the logging system",
+            "body": null,
+            "query": {
+                "event": {
+                    "description": "The event to check the state of",
+                    "type": "string",
+                    "example": "messageDelete",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "boolean",
+                        "example": null
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/xp/rewards",
+        "meta": {
+            "description": "Get all the rewards for a guild",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/xp/user",
+        "meta": {
+            "description": "Gets the current XP for a member",
+            "body": null,
+            "query": {
+                "user": {
+                    "type": "string",
+                    "description": "The user to get the XP for",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "number",
+                        "example": "1234"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/autorole",
+        "meta": {
+            "description": "Adds a new automatically granted role",
+            "body": null,
+            "query": {
+                "role": {
+                    "type": "string",
+                    "description": "The role to add",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Role already exists"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/config",
+        "meta": {
+            "description": "Modifies a config value",
+            "body": null,
+            "query": {
+                "category": {
+                    "type": "string",
+                    "description": "The category of the config to modify",
+                    "required": true
+                },
+                "key": {
+                    "type": "string",
+                    "description": "The key of the config to modify",
+                    "required": true
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The value to set",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/database",
+        "meta": {
+            "description": "Makes a managed db entry",
+            "body": {
+                "path": {
+                    "type": "string",
+                    "description": "The path to the file to write to",
+                    "required": true
+                },
+                "data": {
+                    "type": "string",
+                    "description": "The data to write to the file",
+                    "required": true
+                }
+            },
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Invalid path"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/events/code",
+        "meta": {
+            "description": "Modifies the code of a event.",
+            "body": {
+                "data": {
+                    "type": "string",
+                    "description": "The code to write",
+                    "required": true
+                }
+            },
+            "query": {
+                "id": {
+                    "type": "string",
+                    "description": "The id of the event to modify",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/events/state",
+        "meta": {
+            "description": "Sets the state of a event",
+            "body": null,
+            "query": {
+                "event": {
+                    "type": "string",
+                    "description": "The event to set the state of",
+                    "required": true
+                },
+                "state": {
+                    "type": "boolean",
+                    "description": "The state to set the event to",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing event or state query parameter"
+                    },
+                    {
+                        "type": "string",
+                        "example": "State must be 'true' or 'false'"
+                    }
+                ],
+                "403": [
+                    {
+                        "type": "string",
+                        "example": "You do not have permission to modify this event"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/events/variables",
+        "meta": {
+            "description": "Change a value of a variable in a event scope",
+            "body": {
+                "data": {
+                    "type": "string",
+                    "description": "The value to set",
+                    "required": true
+                }
+            },
+            "query": {
+                "scope": {
+                    "type": "'global' | '[EVENT_ID]'",
+                    "description": "The scope of the variable to modify",
+                    "required": true
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the variable to modify",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "null",
+                        "example": null
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing scope, name or data"
+                    }
+                ],
+                "403": [
+                    {
+                        "type": "string",
+                        "example": "You do not have permission to modify this event"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Event not found"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/events",
+        "meta": {
+            "description": "Creates a new event",
+            "body": null,
+            "query": {
+                "on": {
+                    "type": "string",
+                    "description": "The event to listen to",
+                    "required": true
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the event",
+                    "required": true
+                },
+                "description": {
+                    "type": "string",
+                    "description": "The description of the event",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "object",
+                        "example": "{\n                id: '123456789012345678',\n                guild: '123456789012345678',\n                on: 'messageCreate',\n                name: 'My Event',\n                description: 'This is my event',\n                enabled: true\n            }"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing required parameters"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/messages",
+        "meta": {
+            "description": "Sends a message to a specific channel",
+            "body": {
+                "data": {
+                    "type": "string",
+                    "description": "The message payload to send (discord.js message object)",
+                    "required": true
+                },
+                "webhook": {
+                    "type": "Object",
+                    "description": "The webhook author details (uses any webhook owned by the bot, if none found returns an error)",
+                    "required": false,
+                    "example": "{\"name\": \"Webhook Name\",\"avatar\": \"https://example.com/avatar.png\"}"
+                }
+            },
+            "query": {
+                "channel": {
+                    "type": "string",
+                    "description": "The channel to send the message to",
+                    "required": true
+                },
+                "id": {
+                    "type": "string",
+                    "description": "If specified, the provided message will be either replied to or edited",
+                    "required": false
+                },
+                "mode": {
+                    "type": "'reply' | 'edit'",
+                    "description": "The mode to use when sending the message (reply or edit)",
+                    "required": false,
+                    "example": "reply"
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/xp/rewards",
+        "meta": {
+            "description": "Add a reward for reaching a certain XP level",
+            "body": {
+                "level": {
+                    "type": "number",
+                    "description": "The level to trigger the reward",
+                    "required": true
+                },
+                "value": {
+                    "type": "string",
+                    "description": "The value of the reward (only role id for now)",
+                    "required": true
+                }
+            },
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/xp",
+        "meta": {
+            "description": "Sets a users XP (1000 XP = 1 level)",
+            "body": null,
+            "query": {
+                "user": {
+                    "type": "string",
+                    "description": "The user to set the XP for",
+                    "required": true
+                },
+                "xp": {
+                    "type": "number",
+                    "description": "The amount of XP to set the user to",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/guilds/lookup",
+        "meta": {
+            "description": "Lookup a guild by its ID (Specific users only)",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to lookup",
+                    "required": true
+                }
+            },
+            "authorization": "User",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
+        "route": "/guilds/mutual",
+        "meta": {
+            "description": "Get mutual guilds between the bot and the current user.",
+            "body": null,
+            "query": null,
+            "authorization": "User",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
+        "route": "/guilds",
+        "meta": {
+            "description": "Get all guilds the bot is in (Specific users only)",
+            "body": null,
+            "query": null,
+            "authorization": "User",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
         "route": "/ping",
         "meta": {
-            "description": "Ping the server",
+            "description": "Checks if the server is alive",
             "body": null,
             "query": null,
             "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "pong"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
+        "route": "/stats",
+        "meta": {
+            "description": "Get statistics and analytics collected by the bot",
+            "body": null,
+            "query": null,
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "object",
+                        "example": "{\n    message_counts: {\n        month: number,\n        day: number,\n        lifetime: number\n    },\n    bot: {\n        user_count: number,\n        guild_count: number,\n        channel_count: number,\n    },\n    resType: 'fresh' | 'cached'\n}"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "get",
+        "route": "/uptime",
+        "meta": {
+            "description": "Get the uptime of the client within the API",
+            "body": null,
+            "query": null,
+            "authorization": "None",
+            "returns": {},
             "comment": null
         },
         "type": "Public"
@@ -331,6 +1138,7 @@
             "body": null,
             "query": null,
             "authorization": "User",
+            "returns": {},
             "comment": null
         },
         "type": "Public"
@@ -349,6 +1157,20 @@
                 }
             },
             "authorization": "Locked",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "The new key"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Invalid or missing token in request body"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Internal"
@@ -367,8 +1189,68 @@
             },
             "query": null,
             "authorization": "Locked",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Invalid token"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Internal"
+    },
+    {
+        "method": "post",
+        "route": "/ping",
+        "meta": {
+            "description": "Description of the route",
+            "body": null,
+            "query": null,
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "pong"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "post",
+        "route": "/render/transcript",
+        "meta": {
+            "description": "Pass request through to TicketsBot/Discord-chat-replica service (see their docs)",
+            "body": null,
+            "query": null,
+            "authorization": "None",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Public"
+    },
+    {
+        "method": "post",
+        "route": "/update",
+        "meta": {
+            "description": "Update and restart the API to the latest commit.",
+            "body": null,
+            "query": null,
+            "authorization": "CI",
+            "returns": {},
+            "comment": null
+        },
+        "type": "Public"
     }
 ]

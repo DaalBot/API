@@ -117,4 +117,5 @@ interface Route {
     console.log('\nWriting documentation to docs.json...');
     await fs.writeFile(nPath.join(projectRoot, 'docs.json'), JSON.stringify(output, null, 4));
     console.log('Documentation generation complete!');
+    process.exit(0);
 })();
