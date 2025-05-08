@@ -6,6 +6,9 @@ on:
     paths:
       - 'src/routes/**'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
