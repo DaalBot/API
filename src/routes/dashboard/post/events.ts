@@ -4,7 +4,7 @@ import fs from 'fs';
 import tools from '$lib/tools';
 
 export const meta: RouteMetadata = {
-    description: 'Description of the route',
+    description: 'Creates a new event',
     body: null,
     query: {
         on: {
