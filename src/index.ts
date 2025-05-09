@@ -5,6 +5,7 @@ import type { RouteMetadata } from '$lib/types';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import fss from 'fs';
+import path from 'path';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import bodyParser from 'body-parser';
 import { Client, IntentsBitField } from 'discord.js';
@@ -88,7 +89,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-
 function convertRouteToFile(req: express.Request): string {
     let file = `${__dirname}/routes`;
 
@@ -99,20 +99,33 @@ function convertRouteToFile(req: express.Request): string {
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
 
-    if (!fss.existsSync(file + '.ts')) {
-        const foundRoutes = routes.filter(r => (r.matches.test(file) && r.route.endsWith('+dynamic')));
+    // Normalize the path and ensure it's within the routes directory
+    const normalizedFile = path.normalize(file);
+    if (!normalizedFile.startsWith(`${__dirname}/routes`)) {
+        throw new Error('Invalid path: Path traversal attempt detected');
+    }
+
+    if (!fss.existsSync(normalizedFile + '.ts')) {
+        const foundRoutes = routes.filter(r => (r.matches.test(normalizedFile) && r.route.endsWith('+dynamic')));
 
         foundRoutes.forEach(route => {
             file = `${__dirname}/routes/${route.route}`;
             if (!file.endsWith('+dynamic')) return file = ''; // False positive check
         })
 
-        if (!fss.existsSync(file + '.ts')) {
-            throw new Error(`Route not found: ${file}`);
+        const normalizedDynamicFile = path.normalize(file);
+        if (!normalizedDynamicFile.startsWith(`${__dirname}/routes`)) {
+            throw new Error('Invalid path: Dynamic path exceeds routes directory');
         }
+
+        if (!fss.existsSync(normalizedDynamicFile + '.ts')) {
+            throw new Error(`Route not found: ${normalizedDynamicFile}`);
+        }
+        
+        return normalizedDynamicFile;
     }
 
-    return file;
+    return normalizedFile;
 }
 
 async function checkMetaAuth(req: express.Request, res: express.Response): Promise<boolean> {
