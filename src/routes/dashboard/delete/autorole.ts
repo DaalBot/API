@@ -22,10 +22,6 @@ export const meta: RouteMetadata = {
             type: "string",
             example: "Missing required parameter 'role'."
         }],
-        404: [{
-            type: "string",
-            example: "Autorole not found"
-        }],
         500: [{
             type: "string",
             example: "Failed to delete autorole, are you sure it exists?"
