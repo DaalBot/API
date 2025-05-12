@@ -15,8 +15,8 @@ export const meta: RouteMetadata = {
     authorization: 'None',
     returns: {
         200: [{
-            type: 'null',
-            example: null
+            type: 'string',
+            example: 'success'
         }],
         400: [{
             type: 'string',
@@ -34,5 +34,5 @@ export async function exec(req: Request, res: Response) {
     // Send off the request to delete the file
     await tools.database.deleteFile(`/managed/${guild}/${path}`);
     
-    return null;
+    return 'success';
 }

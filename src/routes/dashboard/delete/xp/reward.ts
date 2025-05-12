@@ -15,8 +15,8 @@ export const meta: RouteMetadata = {
     authorization: 'None',
     returns: {
         200: [{
-            type: 'null',
-            example: null
+            type: 'string',
+            example: 'success'
         }]
     },
     comment: 'Deleted XP reward'
@@ -26,5 +26,5 @@ export async function exec(req: Request, res: Response) {
     const level = req.query.level;
     await tools.database.deleteFile(`/xp/${req.query.guild}/rewards/${level}.reward`);
 
-    return null;
+    return 'success';
 }

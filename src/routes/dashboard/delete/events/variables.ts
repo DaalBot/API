@@ -20,8 +20,8 @@ export const meta: RouteMetadata = {
     authorization: 'None',
     returns: {
         200: [{
-            type: 'null',
-            example: null
+            type: 'string',
+            example: 'success'
         }],
         400: [{
             type: 'string',
@@ -66,7 +66,7 @@ export async function exec(req: Request, res: Response) {
 
     try {
         await tools.database.deleteFile(path);
-        return null;
+        return 'success';
     } catch (e) {
         return res.status(500).json({ ok: false, error: 'Failed to delete variable, are you sure it exists?' });
     }

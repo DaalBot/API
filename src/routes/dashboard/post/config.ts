@@ -23,8 +23,21 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
-    returns: {},
-    comment: null
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'success'
+        }],
+        400: [{
+            type: 'string',
+            example: 'Missing category, key or value'
+        }],
+        404: [{
+            type: 'string',
+            example: 'Config not found'
+        }]
+    },
+    comment: 'changed a config value'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -36,5 +49,5 @@ export async function exec(req: Request, res: Response) {
 
     await tools.database.write(`/config/${req.query.guild}/${category}/${key}.id`, value);
 
-    return null;
+    return 'success';
 }

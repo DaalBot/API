@@ -26,8 +26,8 @@ export const meta: RouteMetadata = {
     authorization: 'None',
     returns: {
         200: [{
-            type: 'null',
-            example: null
+            type: 'string',
+            example: 'success'
         }],
         400: [{
             type: 'string',
@@ -42,7 +42,7 @@ export const meta: RouteMetadata = {
             example: 'You do not have permission to modify this event'
         }]
     },
-    comment: null
+    comment: 'changed a event variable value'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -64,5 +64,5 @@ export async function exec(req: Request, res: Response) {
 
     await tools.database.write(path, data);
 
-    return null;
+    return 'success';
 }

@@ -20,15 +20,15 @@ export const meta: RouteMetadata = {
     authorization: 'None',
     returns: {
         200: [{
-            type: 'null',
-            example: null
+            type: 'string',
+            example: 'success'
         }],
         400: [{
             type: 'string',
             example: 'Invalid path'
         }]
     },
-    comment: null
+    comment: 'wrote a string to a file in the managed db'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -52,5 +52,5 @@ export async function exec(req: Request, res: Response) {
 
     await tools.database.write(`/managed/${guild}/${path}`, data);
 
-    return null;
+    return 'success';
 }
