@@ -20,5 +20,10 @@
     "ignore": [
       "*.json"
     ]
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
   }
 }

@@ -27,6 +27,7 @@ jobs:
       - name: Test API
         run: |
           npm ci
+          npm i -D tsx
           npm run test
 
   deploy:
