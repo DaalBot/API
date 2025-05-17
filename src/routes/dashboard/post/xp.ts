@@ -29,7 +29,7 @@ export async function exec(req: Request, res: Response) {
     const user = req.query.user as string;
     const xp = req.query.xp as string;
 
-    await tools.database.write(`/xp/${req.query.guild}/${user}.xp`, parseInt(xp));
+    await tools.database.write(`/xp/${req.query.guild}/${user}.xp`.trim(), xp);
 
     return 'success';
 }

@@ -60,7 +60,7 @@ export async function exec(req: Request, res: Response) {
         if (event.guild !== req.query.guild) return res.status(403).json({ ok: false, error: 'You do not have permission to modify this event' });
     }
 
-    const path = `/events/${scope == 'global' ? req.query.guild : scope}/variables/${name}.var`;
+    const path = `/events/${scope == 'global' ? req.query.guild : scope}/${name}.var`;
 
     await tools.database.write(path, data);
 

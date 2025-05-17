@@ -9,6 +9,8 @@ import path from 'path';
 import { PermissionFlagsBits } from 'discord-api-types/v10';
 import bodyParser from 'body-parser';
 import { Client, IntentsBitField } from 'discord.js';
+import '$lib/tools/userData'; // Load the userData module to ensure that the cache is initialized or smth
+import '$lib/tools/guildData'; // I honestly don't know if this is needed but the code works now so I'm not touching it
 const app: express.Application = express();
 
 interface Route {
@@ -99,29 +101,30 @@ function convertRouteToFile(req: express.Request): string {
 
     if (req.path.endsWith('/')) file = file.slice(0, -1); // Remove trailing slash
 
+    // Add .ts extension for TypeScript files
+    file += '.ts';
+
     // Normalize the path and ensure it's within the routes directory
     const normalizedFile = path.normalize(file);
     if (!normalizedFile.startsWith(`${__dirname}/routes`)) {
         throw new Error('Invalid path: Path traversal attempt detected');
     }
 
-    if (!fss.existsSync(normalizedFile + '.ts')) {
-        const foundRoutes = routes.filter(r => (r.matches.test(normalizedFile) && r.route.endsWith('+dynamic')));
+    if (!fss.existsSync(normalizedFile)) {
+        const foundRoutes = routes.filter(r => (r.matches.test(req.path) && r.method === req.method));
+        
+        if (foundRoutes.length === 0) {
+            throw new Error(`Route not found: ${req.method} ${req.path}`);
+        }
 
-        foundRoutes.forEach(route => {
-            file = `${__dirname}/routes/${route.route}`;
-            if (!file.endsWith('+dynamic')) return file = ''; // False positive check
-        })
+        // Use the first matching dynamic route
+        file = `${__dirname}/routes${foundRoutes[0].route}.ts`;
 
         const normalizedDynamicFile = path.normalize(file);
         if (!normalizedDynamicFile.startsWith(`${__dirname}/routes`)) {
             throw new Error('Invalid path: Dynamic path exceeds routes directory');
         }
 
-        if (!fss.existsSync(normalizedDynamicFile + '.ts')) {
-            throw new Error(`Route not found: ${normalizedDynamicFile}`);
-        }
-        
         return normalizedDynamicFile;
     }
 
@@ -430,7 +433,7 @@ async function handleDashboardRequest(req: express.Request, res: express.Respons
         }
     } catch (e) {
         console.error(e);
-        res.status(500).json({
+        if (!res.headersSent) res.status(500).json({
             ok: false,
             error: 'Internal server error'
         });
@@ -444,6 +447,15 @@ app.delete('/dashboard/*', async(req, res) => {handleDashboardRequest(req, res)}
 app.get('*', async(req, res) => {handleRequest(req, res)});
 app.post('*', async(req, res) => {handleRequest(req, res)});
 app.delete('*', async(req, res) => {handleRequest(req, res)});
+
+// CORS shit (why, just why)
+app.options('*', (req, res) => {
+    res
+      .header('Access-Control-Allow-Origin', req.header('Origin') || '*')
+      .header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+      .header('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+      .sendStatus(204)
+})
 
 app.listen(process.env.PORT || 3001, () => {
     console.log(`Server started on port ${process.env.PORT || 3001}`);
