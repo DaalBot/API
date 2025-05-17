@@ -31,12 +31,6 @@
                         "example": "Missing required parameter 'role'."
                     }
                 ],
-                "404": [
-                    {
-                        "type": "string",
-                        "example": "Autorole not found"
-                    }
-                ],
                 "500": [
                     {
                         "type": "string",
@@ -70,8 +64,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -112,8 +106,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -210,8 +204,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ]
             },
@@ -639,8 +633,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -683,8 +677,27 @@
                 }
             },
             "authorization": "None",
-            "returns": {},
-            "comment": null
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "success"
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Missing category, key or value"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "string",
+                        "example": "Config not found"
+                    }
+                ]
+            },
+            "comment": "changed a config value"
         },
         "type": "Dashboard"
     },
@@ -716,8 +729,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -727,7 +740,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "wrote a string to a file in the managed db"
         },
         "type": "Dashboard"
     },
@@ -788,8 +801,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -815,7 +828,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "changed the state of an event"
         },
         "type": "Dashboard"
     },
@@ -852,8 +865,8 @@
             "returns": {
                 "200": [
                     {
-                        "type": "null",
-                        "example": null
+                        "type": "string",
+                        "example": "success"
                     }
                 ],
                 "400": [
@@ -875,7 +888,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "changed a event variable value"
         },
         "type": "Dashboard"
     },
