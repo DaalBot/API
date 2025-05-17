@@ -22,9 +22,6 @@ temp/
 # Checks
 checks.js
 
-# Config (they're public however they may get overwritten by git)
-/config/*
-
 # Build
 dist/
 
