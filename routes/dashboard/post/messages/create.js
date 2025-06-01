@@ -1,6 +1,7 @@
 const client = require('../../../../client.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v10');
+const axios = require('axios');
 const express = require('express');
 const { WebhookClient, ActionRowBuilder, ChannelType } = require('discord.js');
 
@@ -23,8 +24,10 @@ module.exports = async (req, res) => {
 
     if (!data.id) {
         if (!webhook.username) { // Send message as bot
-            await rest.post(Routes.channelMessages(channel), {
-                body: messagePayload
+            await axios.post(`https://discord.com/api/channels/${channel}/messages`, messagePayload, {
+                headers: {
+                    Authorization: `Bot ${process.env.TOKEN}`
+                }
             })
         } else { // Send message as webhook of bot
             const webhooks = await client.guilds.cache.get(guild).channels.cache.get(channel).fetchWebhooks();
