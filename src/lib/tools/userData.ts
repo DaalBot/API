@@ -33,11 +33,15 @@ async function fetchWithRetry(url: string, token: string, attempt = 1): Promise<
         });
         return response;
     } catch (e) {
-        if (axios.isAxiosError(e) && e.response?.data?.retry_after && attempt < MAX_RETRIES) {
-            const retryAfter = e.response.data.retry_after * 1000; // Convert to ms
-            console.warn(`Rate limited, retrying in ${retryAfter}ms (attempt ${attempt}/${MAX_RETRIES})`);
-            await new Promise(resolve => setTimeout(resolve, retryAfter));
-            return fetchWithRetry(url, token, attempt + 1);
+        if (axios.isAxiosError(e)) {
+            if (e.response?.data?.retry_after && attempt < MAX_RETRIES) {
+                const retryAfter = e.response.data.retry_after * 1000; // Convert to ms
+                console.warn(`Rate limited, retrying in ${retryAfter}ms (attempt ${attempt}/${MAX_RETRIES})`);
+                await new Promise(resolve => setTimeout(resolve, retryAfter));
+                return fetchWithRetry(url, token, attempt + 1);
+            }
+
+            console.error('Error fetching data from Discord API:', e.response?.data);
         }
         throw e;
     }
@@ -120,7 +124,11 @@ export default async function get(options: UserDataGetOptions): Promise<CachedUs
                     cacheMap.set(options.accessToken!, cacheData);
                     console.debug('Cached user data from Discord API');
                     return cacheData;
-                } finally {
+                } catch (e) {
+                    console.error('Error fetching user data from Discord API:', e);
+                    return null; // Return null if there's an error
+                }
+                finally {
                     pendingRequests.delete(options.accessToken!);
                 }
             })();

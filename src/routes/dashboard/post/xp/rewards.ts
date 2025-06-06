@@ -23,6 +23,6 @@ export const meta: RouteMetadata = {
 };
 
 export async function exec(req: Request, res: Response) {
-    await tools.database.write(`/xp/rewards/${req.body.level}.reward`, req.body.value);
+    await tools.database.write(`/xp/${req.query.guild}/rewards/${req.body.level}.reward`, req.body.value);
     return 'success';
 }
