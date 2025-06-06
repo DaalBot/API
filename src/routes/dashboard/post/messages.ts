@@ -62,10 +62,8 @@ export async function exec(req: Request, res: Response) {
     if (req.body.webhook) {
         const webhook = req.body.webhook as { name: string; avatarURL: string };
         if (!webhook.name) return res.status(400).json({ error: 'Missing webhook name' });
-        if (!webhook.avatarURL) return res.status(400).json({ error: 'Missing webhook avatarURL' });
-        if (webhook.avatarURL && !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(webhook.avatarURL)) return res.status(400).json({ error: 'Invalid webhook avatarURL URL' });
+        if (!webhook.avatarURL || !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(webhook.avatarURL)) return res.status(400).json({ error: 'Invalid webhook avatarURL URL' });
         if (webhook.name && webhook.name.length > 80) return res.status(400).json({ error: 'Webhook name is too long' });
-        if (webhook.avatarURL && webhook.avatarURL.length > 2048) return res.status(400).json({ error: 'Webhook avatarURL is too long' });
 
         const webhooks = await channel.fetchWebhooks();
         const webhookToUse = webhooks.find(w => w.owner?.id === client.user?.id);
