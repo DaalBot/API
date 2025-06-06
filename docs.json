@@ -590,7 +590,7 @@
                 "user": {
                     "type": "string",
                     "description": "The user to get the XP for",
-                    "required": true
+                    "required": false
                 },
                 "guild": {
                     "type": "string",
@@ -604,6 +604,10 @@
                     {
                         "type": "number",
                         "example": "1234"
+                    },
+                    {
+                        "type": "Array<{ user: string, xp: number }>",
+                        "example": "[{ user: \"123456789012345678\", xp: 1234 }]"
                     }
                 ]
             },
