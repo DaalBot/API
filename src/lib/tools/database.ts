@@ -23,11 +23,20 @@ export async function read(path: string): Promise<string> {
     return request.data;
 }
 
-export async function readDir(path: string, readContents: boolean = false): Promise<Array<{ name: string, value?: string }>> {
-    return await requests.get(`/get/database/readDir?skipread=${!readContents}`, {
+export async function readDir(path: string, readContents: boolean = false, skipDirectories: boolean = false): Promise<Array<{ name: string, value?: string }>> {
+    const resp = await requests.get(`/get/database/readDir?skipread=${!readContents}`, {
         'bot': 'Discord',
         'path': path
     }) as unknown as Array<{ name: string, value?: string }>;
+
+    if (resp.length === 0) {
+        return [];
+    }
+    if (skipDirectories) {
+        return resp.filter(file => file.value !== '_Directory_');
+    }
+    
+    return resp;
 }
 
 export async function write(path: string, data: any, encrypt: boolean = false): Promise<string> {

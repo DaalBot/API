@@ -9,7 +9,7 @@ export const meta: RouteMetadata = {
         user: {
             type: 'string',
             description: 'The user to get the XP for',
-            required: true
+            required: false
         }
     },
     authorization: 'None',
@@ -17,6 +17,9 @@ export const meta: RouteMetadata = {
         200: [{
             type: 'number',
             example: '1234'
+        }, {
+            type: 'Array<{ user: string, xp: number }>',
+            example: '[{ user: "123456789012345678", xp: 1234 }]'
         }]
     },
     comment: null
@@ -27,7 +30,12 @@ export async function exec(req: Request, res: Response) {
     const guild = req.query.guild;
 
     if (!user) {
-        return res.status(400).json({ error: 'Missing user' });
+        const xp = await tools.database.readDir(`/xp/${guild}`, true, true);
+        const xpData = xp.map(file => ({
+            user: file.name.replace('.xp', ''),
+            xp: file.value
+        }));
+        return xpData;
     }
 
     const xp = await tools.database.read(`/xp/${guild}/${user}.xp`);
