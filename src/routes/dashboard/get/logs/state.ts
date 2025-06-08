@@ -1,6 +1,7 @@
 import type { RouteMetadata } from '$lib/types';
 import type { Request, Response } from 'express';
 import tools from '$lib/tools';
+import axios from 'axios';
 
 export const meta: RouteMetadata = {
     description: 'Checks the current state of a gateway event in the logging system',
@@ -10,13 +11,16 @@ export const meta: RouteMetadata = {
             description: 'The event to check the state of',
             type: 'string',
             example: 'messageDelete',
-            required: true
+            required: false
         }
     },
     authorization: 'None',
     returns: {
         200: [{
             type: 'boolean',
+            example: null
+        }, {
+            type: 'Array<{ name: string, value: any }>',
             example: null
         }]
     },
@@ -26,8 +30,22 @@ export const meta: RouteMetadata = {
 export async function exec(req: Request, res: Response) {
     const guild = req.query.guild as string;
     const event = req.query.event as string;
-    if (!event) return res.status(400).json({ ok: false, error: 'Missing event query parameter' });
+    if (!event) {
+        const data = await tools.database.readDir(`/logging/${guild}`, true, true);
+        return data.filter(i => i.name.endsWith('.enabled')).map((item) => {
+            return {
+                name: item.name.replace(/\.enabled$/, ''),
+                value: item.value
+            }
+        });
+    }
 
-    const state = await tools.database.read(`/logging/${guild}/${event.toUpperCase()}.enabled`);
-    return state;
+    try {
+        const state = await tools.database.read(`/logging/${guild}/${event.toUpperCase()}.enabled`);
+        return state;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) { // We don't actually create the event marker until they are enabled so we can safely assume that if it doesn't exist, it is not enabled.
+            return false;
+        }
+    }
 }
