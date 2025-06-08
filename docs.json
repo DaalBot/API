@@ -540,7 +540,7 @@
                     "description": "The event to check the state of",
                     "type": "string",
                     "example": "messageDelete",
-                    "required": true
+                    "required": false
                 },
                 "guild": {
                     "type": "string",
@@ -553,6 +553,10 @@
                 "200": [
                     {
                         "type": "boolean",
+                        "example": null
+                    },
+                    {
+                        "type": "Array<{ name: string, value: any }>",
                         "example": null
                     }
                 ]
@@ -936,6 +940,75 @@
                     {
                         "type": "string",
                         "example": "Missing required parameters"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/logs/channel",
+        "meta": {
+            "description": "Sets the channel that events will be logged to",
+            "body": null,
+            "query": {
+                "channel": {
+                    "type": "string",
+                    "description": "The ID of the channel to log events to",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/logs/state",
+        "meta": {
+            "description": "Changes the state of a gateway events logging",
+            "body": null,
+            "query": {
+                "event": {
+                    "type": "string",
+                    "description": "The gateway event to change the state of",
+                    "required": true,
+                    "example": "guildMemberAdd"
+                },
+                "state": {
+                    "type": "boolean",
+                    "description": "The new state of the event logging",
+                    "required": true,
+                    "example": "true"
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
                     }
                 ]
             },
