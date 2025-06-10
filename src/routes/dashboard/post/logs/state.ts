@@ -37,10 +37,10 @@ export async function exec(req: Request, res: Response) {
     if (!event || !state) {
         return res.status(400).json({ error: 'Missing event or state query parameter' });
     }
-    if (state !== 'true' && state !== 'false') {
+    if (state != 'true' && state != 'false') {
         return res.status(400).json({ error: 'State must be \'true\' or \'false\'' });
     }
 
-    await tools.database.write(`/logging/${guild}/${event.toUpperCase()}.enabled`, state === 'true' ? 'true' : 'false');
+    await tools.database.write(`/logging/${guild}/${event.toUpperCase()}.enabled`, state);
     return 'Success.';
 }

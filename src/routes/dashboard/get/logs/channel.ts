@@ -17,5 +17,10 @@ export const meta: RouteMetadata = {
 };
 
 export async function exec(req: Request, res: Response) {
-    return `${await tools.database.read(`/logging/${req.query.guild}/channel.id`)}`;
+  const guild = req.query.guild as string;
+  const channel = await tools.database.read(`/logging/${guild}/channel.id`);
+  
+  const result = `${channel}`;
+  
+  return result;
 }

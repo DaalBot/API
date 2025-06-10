@@ -30,8 +30,11 @@ export async function exec(req: Request, res: Response) {
         return res.status(400).json({ error: 'Missing channel query parameter' });
     }
 
-    // Write the channel ID to the database
-    await tools.database.write(`/logging/${guild}/channel.id`, channel);
-    
-    return 'Success.';
+    try {
+        await tools.database.write(`/logging/${guild}/channel.id`, channel);
+    } catch (e) {
+        console.error(`[${Date.now().toString()}] Write failed`, e);
+    }
+
+    res.status(200).json({ ok: true, data: 'Success.' });
 }

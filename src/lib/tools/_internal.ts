@@ -6,7 +6,8 @@ export async function get(path: string, headers?: Record<string, string>, raw?: 
             'Content-Type': 'application/json',
             'Authorization': process.env.BotCommunicationKey,
             ...headers
-        }
+        },
+        responseType: 'text'
     });
 
     return raw ? response : response.data;

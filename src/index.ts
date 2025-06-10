@@ -465,6 +465,7 @@ const client = new Client({
     intents: intents
 });
 
-if (process.env.TOKEN) client.login(process.env.TOKEN);
+if (process.env.TOKEN && process.env.FORCE_LIVE_LOGIN != '1') client.login(process.env.TOKEN);
+if (process.env.FORCE_LIVE_LOGIN == '1') client.login(process.env.LIVE_TOKEN)
 
 export { app, client };

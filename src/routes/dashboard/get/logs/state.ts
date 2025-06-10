@@ -28,24 +28,28 @@ export const meta: RouteMetadata = {
 };
 
 export async function exec(req: Request, res: Response) {
-    const guild = req.query.guild as string;
-    const event = req.query.event as string;
-    if (!event) {
-        const data = await tools.database.readDir(`/logging/${guild}`, true, true);
-        return data.filter(i => i.name.endsWith('.enabled')).map((item) => {
-            return {
-                name: item.name.replace(/\.enabled$/, ''),
-                value: item.value
-            }
-        });
-    }
+  const guild = req.query.guild as string;
+  const event = req.query.event as string;
 
-    try {
-        const state = await tools.database.read(`/logging/${guild}/${event.toUpperCase()}.enabled`);
-        return state;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) { // We don't actually create the event marker until they are enabled so we can safely assume that if it doesn't exist, it is not enabled.
-            return false;
-        }
+  if (!event) {
+    const data = await tools.database.readDir(`/logging/${guild}`, true, true);
+    const result = data.filter(i => i.name.endsWith('.enabled')).map(item => ({
+      name: item.name.replace(/\.enabled$/, ''),
+      value: item.value
+    }));
+
+    return res.json({ ok: true, data: result });
+  }
+
+  try {
+    const state = await tools.database.read(`/logging/${guild}/${event.toUpperCase()}.enabled`);
+    return res.json({ ok: true, data: state });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return res.json({ ok: true, data: false });
     }
+    // Log or return error explicitly:
+    console.error('Error in /dashboard/logs/state:', error);
+    return res.status(500).json({ ok: false, error: 'Internal server error' });
+  }
 }
