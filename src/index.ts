@@ -157,7 +157,7 @@ async function checkMetaAuth(req: express.Request, res: express.Response): Promi
         }
     
         if (meta.authorization == 'Locked') {
-            if (req.headers.authorization.split(' ')[1] !== process.env.BotCommunicationKey) {
+            if (req.headers.authorization !== process.env.BotCommunicationKey) {
                 res.status(403).json({
                     ok: false,
                     error: 'Invalid communication key'
@@ -167,13 +167,13 @@ async function checkMetaAuth(req: express.Request, res: express.Response): Promi
         };
 
         if (meta.authorization == 'CI') {
-            if (req.headers.authorization.split(' ')[1] !== process.env.ActionCommunicationKey) {
+            if (req.headers.authorization !== process.env.ActionCommunicationKey) {
                 res.status(403).json({
                     ok: false,
                     error: 'Invalid communication key'
                 });
                 return false;
-            }
+            } else return true;
         }
     
         if (meta.authorization == 'User' && !req.headers.authorization.startsWith('User ')) {
