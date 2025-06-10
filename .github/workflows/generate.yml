@@ -1,0 +1,38 @@
+name: Generation
+run-name: ${{ github.actor }}
+on:
+  push:
+    branches:
+      - 'ts-rewrite'
+    paths:
+      - 'src/routes/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+            node-version: 18
+
+      - uses: actions/checkout@v3
+      - run: |
+          npm ci
+          npm i -D tsx
+          npm run generate:docs
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "[skip ci] Update generated files"
+          git push

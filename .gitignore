@@ -1,3 +1,6 @@
+# Temporary reference
+ref/
+
 # Data
 .env
 /data/
@@ -19,5 +22,8 @@ temp/
 # Checks
 checks.js
 
-# Config (they're public however they may get overwritten by git)
-/config/*
+# Build
+dist/
+
+# Duplicates of DaalBot/Discord ignored files
+src/lib/checks.ts
