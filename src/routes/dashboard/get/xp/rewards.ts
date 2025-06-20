@@ -7,7 +7,14 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: 'None',
-    returns: {},
+    returns: {
+        200: [
+            {
+                type: 'Array<{ level: string, reward: string }>',
+                example: `[{"level":"1","reward":"[Role ID]"},{"level":"2","reward":"[Role ID]"}]`
+            }
+        ]
+    },
     comment: null
 };
 
