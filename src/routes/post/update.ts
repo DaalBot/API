@@ -13,11 +13,11 @@ export const meta: RouteMetadata = {
 };
 
 export async function exec(req: Request, res: Response) {
-    execSync('sh update.sh');
+    execSync('git pull');
     res.send({ // Ensure CI flow doesnt fail due to timeout
         ok: true,
         data: 'Updated'
     });
 
-    execSync('pm2 restart 1');
+    execSync('pm2 restart API');
 }

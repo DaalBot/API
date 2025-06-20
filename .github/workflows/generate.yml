@@ -2,8 +2,6 @@ name: Generation
 run-name: ${{ github.actor }}
 on:
   push:
-    branches:
-      - 'ts-rewrite'
     paths:
       - 'src/routes/**'
   workflow_dispatch:
