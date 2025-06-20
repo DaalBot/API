@@ -1,4 +1,5 @@
 {
+  "name": "daalbotapi",
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "NODE_ENV=production node dist/index.js",
