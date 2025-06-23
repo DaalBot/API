@@ -15,7 +15,7 @@ export async function exec(req: Request, res: Response) {
     const body = req.body;
     if (!body) return res.status(400).send(`<h1>400 Bad Request (body missing)</h1>`);
 
-    const response = await axios.post('http://api.daalbot.xyz:8564', body, {
+    const response = await axios.post('http://localhost:8564', body, {
         headers: {
             'Content-Type': 'application/json'
         }
