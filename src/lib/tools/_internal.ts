@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const baseUrl = `http${process.env.DEV ? 's://bot.daalbot.xyz' : 'localhost:3000'}`
+const baseUrl = `http${process.env.DEV ? 's://bot.daalbot.xyz' : '://localhost:3000'}`
 export async function get(path: string, headers?: Record<string, string>, raw?: boolean): Promise<string | AxiosResponse> {
     const response = await axios.get(`${baseUrl}${path}`, {
         headers: {
