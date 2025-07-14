@@ -4,6 +4,7 @@ import tools from '$lib/tools';
 import { client } from '$app/index';
 import { ChannelType } from 'discord-api-types/v10';
 import { TextChannel, Webhook } from 'discord.js';
+import axios from 'axios';
 
 const disallowedTypes = [
     ChannelType.GuildCategory,
@@ -15,15 +16,9 @@ export const meta: RouteMetadata = {
     description: 'Sends a message to a specific channel',
     body: {
         data: {
-            type: 'string',
+            type: 'MessagePayload',
             description: 'The message payload to send (discord.js message object)',
             required: true
-        },
-        webhook: {
-            type: 'Object',
-            description: 'The webhook author details (uses any webhook owned by the bot, if none found returns an error)',
-            required: false,
-            example: `{"name": "Webhook Name","avatar": "https://example.com/avatar.png"}`
         }
     },
     query: {
@@ -34,18 +29,22 @@ export const meta: RouteMetadata = {
         },
         id: {
             type: 'string',
-            description: 'If specified, the provided message will be either replied to or edited',
+            description: 'The ID of the message to edit (use message_reference if you want to reply to a message)',
             required: false
         },
-        mode: {
-            type: `'reply' | 'edit'`,
-            description: 'The mode to use when sending the message (reply or edit)',
-            required: false,
-            example: 'reply'
+        webhook: {
+            type: 'string',
+            description: 'The ID of the webhook to use for sending the message (/webhook list)',
+            required: false
         }
     },
     authorization: 'None',
-    returns: {},
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'success'
+        }]
+    },
     comment: null
 };
 
@@ -57,46 +56,39 @@ export async function exec(req: Request, res: Response) {
     if (!channel) return res.status(404).json({ error: 'Channel not found' });
     if (disallowedTypes.includes(channel.type)) return res.status(400).json({ error: 'Channel type not allowed' });
 
-    let sender: TextChannel | Webhook = channel;
-
-    if (req.body.webhook) {
-        const webhook = req.body.webhook as { name: string; avatarURL: string };
-        if (!webhook.name) return res.status(400).json({ error: 'Missing webhook name' });
-        if (!webhook.avatarURL || !/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(webhook.avatarURL)) return res.status(400).json({ error: 'Invalid webhook avatarURL URL' });
-        if (webhook.name && webhook.name.length > 80) return res.status(400).json({ error: 'Webhook name is too long' });
-
-        const webhooks = await channel.fetchWebhooks();
-        const webhookToUse = webhooks.find(w => w.owner?.id === client.user?.id);
-        if (!webhookToUse) return res.status(424).json({ error: 'No webhook found' });
-
-        sender = webhookToUse;
+    if (!req.query.webhook && !req.query.id) {
+        await axios.post(`https://discord.com/api/v10/channels/${channel.id}/messages`, req.body.data, { // Discord.JS behaves weirdly with Components V2 when inputting JSON??
+            headers: {
+                'Authorization': `Bot ${process.env.TOKEN}`
+            }
+        });
+        return 'success';
     }
 
-    const messageData = req.body.data;
+    let baseURL = `https://discord.com/api/v10/channels/${channel.id}`;
+    if (req.query.webhook) {
+        const webhooks = await channel.fetchWebhooks();
+        
+        const webhook = webhooks.get(req.query.webhook as string);
+        if (!webhook) return res.status(404).json({ error: 'Webhook not found' });
+
+        baseURL = webhook.url;
+
+        if (!req.query.id) {
+            await axios.post(`${baseURL}`, req.body.data, {
+                headers: {
+                    'Authorization': `Bot ${process.env.TOKEN}`
+                }
+            });
+        }
+    }
 
     if (req.query.id) {
-        const messageId = req.query.id as string;
-        const message = await channel.messages.fetch(messageId);
-        if (!message) return res.status(404).json({ error: 'Message not found' });
-
-        if (req.query.mode === 'reply') { // TODO: Make these work with webhooks
-            await message.reply(messageData);
-        } else if (req.query.mode === 'edit') {
-            if (message.author.id !== client.user?.id) return res.status(403).json({ error: 'You cannot edit this message' });
-
-            await message.edit(messageData);
-        } else {
-            return res.status(400).json({ error: 'Invalid mode / No mode selected' });
-        }
-    } else {
-        if (sender instanceof Webhook) {
-            await sender.send({
-                ...messageData,
-                ...req.body.webhook
-            });
-        } else {
-            await sender.send(messageData);
-        }
+        await axios.patch(`${baseURL}/messages/${req.query.id}`, req.body.data, {
+            headers: {
+                'Authorization': `Bot ${process.env.TOKEN}`
+            }
+        });
     }
 
     return 'success';
