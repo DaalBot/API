@@ -1030,15 +1030,9 @@
             "description": "Sends a message to a specific channel",
             "body": {
                 "data": {
-                    "type": "string",
+                    "type": "MessagePayload",
                     "description": "The message payload to send (discord.js message object)",
                     "required": true
-                },
-                "webhook": {
-                    "type": "Object",
-                    "description": "The webhook author details (uses any webhook owned by the bot, if none found returns an error)",
-                    "required": false,
-                    "example": "{\"name\": \"Webhook Name\",\"avatar\": \"https://example.com/avatar.png\"}"
                 }
             },
             "query": {
@@ -1049,14 +1043,13 @@
                 },
                 "id": {
                     "type": "string",
-                    "description": "If specified, the provided message will be either replied to or edited",
+                    "description": "The ID of the message to edit (use message_reference if you want to reply to a message)",
                     "required": false
                 },
-                "mode": {
-                    "type": "'reply' | 'edit'",
-                    "description": "The mode to use when sending the message (reply or edit)",
-                    "required": false,
-                    "example": "reply"
+                "webhook": {
+                    "type": "string",
+                    "description": "The ID of the webhook to use for sending the message (/webhook list)",
+                    "required": false
                 },
                 "guild": {
                     "type": "string",
@@ -1065,7 +1058,14 @@
                 }
             },
             "authorization": "None",
-            "returns": {},
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "success"
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Dashboard"
