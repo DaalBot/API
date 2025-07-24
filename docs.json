@@ -505,6 +505,32 @@
     },
     {
         "method": "get",
+        "route": "/dashboard/info",
+        "meta": {
+            "description": "Returns a collection of information from the api (mostly used for badges)",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "Object",
+                        "example": "{\n    \"status\": \"online\", // always online, this is just for the sake of shields.io not just showing PONG\n    \"guilds\": 85,\n    \"ping\": 42,\n}"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
         "route": "/dashboard/logs/channel",
         "meta": {
             "description": "Gets the current channel logs are sent to",
