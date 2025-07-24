@@ -1,6 +1,6 @@
 import type { RouteMetadata } from '$lib/types';
 import type { Request, Response } from 'express';
-import { client } from '../../../index';
+import { client } from '../../index';
 import tools from '$lib/tools';
 
 export const meta: RouteMetadata = {
