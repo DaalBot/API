@@ -184,6 +184,42 @@
     },
     {
         "method": "delete",
+        "route": "/dashboard/invites/roles",
+        "meta": {
+            "description": "Deletes a role invite from the server.",
+            "body": null,
+            "query": {
+                "invite": {
+                    "type": "string",
+                    "description": "The invite code to unlink",
+                    "required": true
+                },
+                "role": {
+                    "type": "string",
+                    "description": "The role to unlink from the invite, if not provided, all roles will be unlinked",
+                    "required": false
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "delete",
         "route": "/dashboard/xp/reward",
         "meta": {
             "description": "Delete a reward for reaching a certain level",
@@ -496,6 +532,58 @@
                     {
                         "type": "string",
                         "example": "getGuildData returned null"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/invites/roles",
+        "meta": {
+            "description": "Gets data about the roles granted per invite for the server.",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "{ enabled: boolean, links: Record<string, Array<string>> }",
+                        "example": "{\"enabled\":true,\"links\":{\"inviteCode\":[\"role1\",\"role2\"]}}"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "get",
+        "route": "/dashboard/invites/tracking",
+        "meta": {
+            "description": "Gets invite tracking data for the server.",
+            "body": null,
+            "query": {
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "{ enabled: boolean, invites: Array<{code: string, uses: number, users: Array<string>}> }",
+                        "example": "{\"enabled\":true,\"invites\":[{\"code\":\"inviteCode\",\"uses\":10,\"users\":[\"user1\",\"user2\"]}]}"
                     }
                 ]
             },
@@ -947,6 +1035,83 @@
                     {
                         "type": "string",
                         "example": "Missing required parameters"
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/invites/roles",
+        "meta": {
+            "description": "Gets data about the roles granted per invite for the server.",
+            "body": null,
+            "query": {
+                "role": {
+                    "type": "string",
+                    "description": "The role to link to the invite.",
+                    "required": true
+                },
+                "invite": {
+                    "type": "string",
+                    "description": "The invite code to link the role to.",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "Role already linked to this invite."
+                    },
+                    {
+                        "type": "string",
+                        "example": "Role and invite parameters are required."
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
+        "route": "/dashboard/invites/tracking",
+        "meta": {
+            "description": "Toggles invite tracking for the server.",
+            "body": null,
+            "query": {
+                "state": {
+                    "type": "boolean",
+                    "description": "The state to set for the invite tracking system.",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
                     }
                 ]
             },
