@@ -3,36 +3,27 @@ import type { Request, Response } from 'express';
 import tools from '$lib/tools';
 
 export const meta: RouteMetadata = {
-    description: 'Adds a new role invite link to the server.',
+    description: 'Toggle whether or not role invites should be enabled.',
     body: null,
     query: {
-        role: {
-            type: 'string',
-            description: 'The role to link to the invite.',
-            required: true
-        },
-        invite: {
-            type: 'string',
-            description: 'The invite code to link the role to.',
+        state: {
+            type: 'boolean',
+            description: 'Whether the role is enabled for the invite.',
             required: true
         }
     },
     authorization: 'None',
     returns: {
-        400: [
-            {
-                type: 'string',
-                example: 'Role already linked to this invite.'
-            },
-            {
-                type: 'string',
-                example: 'Role and invite parameters are required.'
-            }
-        ],
         200: [
             {
                 type: 'string',
                 example: 'Success.'
+            }
+        ],
+        400: [
+            {
+                type: 'string',
+                example: 'State parameter must be true or false.'
             }
         ]
     },
@@ -41,11 +32,10 @@ export const meta: RouteMetadata = {
 
 export async function exec(req: Request, res: Response) {
     const { guild } = req.query;
-    const role = req.query.role as string;
-    const invite = req.query.invite as string;
+    const state = req.query.state as string;
 
-    if (!role || !invite) {
-        return res.status(400).json({ok: false, data: 'Role and invite parameters are required.'});
+    if (state !== 'true' && state !== 'false') {
+        return res.status(400).json({ok: false, data: 'State parameter must be true or false.'});
     }
 
     let roleLinkJSON: { enabled: boolean, links: Record<string, Array<string>> } = {
@@ -62,15 +52,7 @@ export async function exec(req: Request, res: Response) {
         }
     }
 
-    if (!roleLinkJSON.links[invite]) {
-        roleLinkJSON.links[invite] = [];
-    }
-
-    if (!roleLinkJSON.links[invite].includes(role)) {
-        roleLinkJSON.links[invite].push(role);
-    } else {
-        return res.status(400).json({ok: false, data: 'Role already linked to this invite.'});
-    }
+    roleLinkJSON.enabled = state === 'true';
 
     await tools.database.write(`/managed/${guild}/roleLinks.json`, JSON.stringify(roleLinkJSON));
 
