@@ -17,7 +17,8 @@ export const meta: RouteMetadata = {
                         {
                             code: 'inviteCode',
                             uses: 10,
-                            users: ['user1', 'user2']
+                            creator: 'user1',
+                            users: ['user2', 'user3']
                         }
                     ]
                 })
@@ -31,7 +32,7 @@ export async function exec(req: Request, res: Response) {
     const { guild } = req.query;
 
     // @ts-ignore - This just has bad typing
-    const existingInviteTrackingJSON: { enabled: boolean, invites: Array<{code: string, uses: number, users: Array<string>}> } = await tools.database.read(`/managed/${guild}/inviteTracking.json`);
+    const existingInviteTrackingJSON: { enabled: boolean, invites: Array<{code: string, uses: number, creator: string, users: Array<string>}> } = await tools.database.read(`/managed/${guild}/inviteTracking.json`);
 
     return existingInviteTrackingJSON;
 }
