@@ -5,4 +5,8 @@ export interface RouteMetadata {
     authorization: 'None' | 'Guild' | 'Locked' | 'User' | 'CI';
     returns: Record<number, { type: string, example: string | null }[]> | null;
     comment: string | null;
+    rate?: {
+        window: number; // In seconds, determines the window from the first request until it resets
+        limit: number; // The maximum number of requests allowed in the window
+    }
 }

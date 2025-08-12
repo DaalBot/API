@@ -31,8 +31,19 @@ export const meta: RouteMetadata = {
 export async function exec(req: Request, res: Response) {
     const { guild } = req.query;
 
-    // @ts-ignore - This just has bad typing
-    const existingInviteTrackingJSON: { enabled: boolean, invites: Array<{code: string, uses: number, creator: string, users: Array<string>}> } = await tools.database.read(`/managed/${guild}/inviteTracking.json`);
+    try {
+        // @ts-ignore - This just has bad typing
+        const existingInviteTrackingJSON: { enabled: boolean, invites: Array<{code: string, uses: number, creator: string, users: Array<string>}> } = await tools.database.read(`/managed/${guild}/inviteTracking.json`);
 
-    return existingInviteTrackingJSON;
+        return existingInviteTrackingJSON;
+    } catch (error: any) {
+        if (error?.message === 'File not found') {
+            return {
+                enabled: false,
+                invites: []
+            };
+        } else {
+            throw error; // Re-throw if it's not a "file not found" error
+        }
+    }
 }
