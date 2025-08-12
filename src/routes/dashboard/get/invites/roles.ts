@@ -26,8 +26,17 @@ export const meta: RouteMetadata = {
 export async function exec(req: Request, res: Response) {
     const { guild } = req.query;
 
-    // @ts-ignore - This just has bad typing
-    const roleLinkJSON: { enabled: boolean, links: Record<string, Array<string>> } = await tools.database.read(`/managed/${guild}/roleLinks.json`);
+    try {
+        // @ts-ignore - This just has bad typing
+        const roleLinkJSON: { enabled: boolean, links: Record<string, Array<string>> } = await tools.database.read(`/managed/${guild}/roleLinks.json`);
 
-    return roleLinkJSON;
+        return roleLinkJSON;
+    } catch (error: any) {
+        if (error.message === 'File not found') {
+            return {
+                enabled: false,
+                links: {}
+            }
+        } else throw error;
+    }
 }
