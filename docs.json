@@ -1152,7 +1152,11 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": null,
+            "rate": {
+                "window": 10,
+                "limit": 2
+            }
         },
         "type": "Dashboard"
     },
