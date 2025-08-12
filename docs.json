@@ -583,7 +583,7 @@
                 "200": [
                     {
                         "type": "{ enabled: boolean, invites: Array<{code: string, uses: number, users: Array<string>}> }",
-                        "example": "{\"enabled\":true,\"invites\":[{\"code\":\"inviteCode\",\"uses\":10,\"users\":[\"user1\",\"user2\"]}]}"
+                        "example": "{\"enabled\":true,\"invites\":[{\"code\":\"inviteCode\",\"uses\":10,\"creator\":\"user1\",\"users\":[\"user2\",\"user3\"]}]}"
                     }
                 ]
             },
