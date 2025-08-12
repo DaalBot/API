@@ -1044,9 +1044,46 @@
     },
     {
         "method": "post",
+        "route": "/dashboard/invites/roles/toggle",
+        "meta": {
+            "description": "Toggle whether or not role invites should be enabled.",
+            "body": null,
+            "query": {
+                "state": {
+                    "type": "boolean",
+                    "description": "Whether the role is enabled for the invite.",
+                    "required": true
+                },
+                "guild": {
+                    "type": "string",
+                    "description": "The ID of the guild to perform the action on",
+                    "required": true
+                }
+            },
+            "authorization": "None",
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ],
+                "400": [
+                    {
+                        "type": "string",
+                        "example": "State parameter must be true or false."
+                    }
+                ]
+            },
+            "comment": null
+        },
+        "type": "Dashboard"
+    },
+    {
+        "method": "post",
         "route": "/dashboard/invites/roles",
         "meta": {
-            "description": "Gets data about the roles granted per invite for the server.",
+            "description": "Adds a new role invite link to the server.",
             "body": null,
             "query": {
                 "role": {
