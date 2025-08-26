@@ -8,7 +8,14 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: 'User',
-    returns: {},
+    returns: {
+        200: [
+            {
+                type: "Array<string>",
+                example: '["GUILD_ID","GUILD_ID"]'
+            }
+        ]
+    },
     comment: null
 };
 
