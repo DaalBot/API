@@ -93,6 +93,12 @@ export async function exec(req: Request, res: Response) {
         case 'guildban':
             objectName = 'ban';
             break;
+        case 'guildwarn':
+            objectName = 'warn';
+            break;
+        case 'guildrole':
+            objectName = 'role';
+            break;
         default:
             break;
     }
