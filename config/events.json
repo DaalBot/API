@@ -71,6 +71,18 @@
         {
             "name": "Interaction Create",
             "value": "interactionCreate"
+        },
+        {
+            "name": "Guild Warn Create",
+            "value": "guildWarnCreate"
+        },
+        {
+            "name": "Guild Warn Delete",
+            "value": "guildWarnDelete"
+        },
+        {
+            "name": "Voice State Update",
+            "value": "voiceStateUpdate"
         }
     ]
 }
