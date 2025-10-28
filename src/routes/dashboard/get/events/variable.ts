@@ -39,7 +39,7 @@ export async function exec(req: Request, res: Response) {
     const variables = files.filter(f => f.name != 'event.js').map((file) => {
         return {
             name: file.name.replace('.var', ''),
-            value: file.value
+            value: file.content
         }
     });
 

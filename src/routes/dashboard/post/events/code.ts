@@ -19,7 +19,12 @@ export const meta: RouteMetadata = {
         }
     },
     authorization: 'None',
-    returns: {},
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'success'
+        }]
+    },
     comment: null
 };
 

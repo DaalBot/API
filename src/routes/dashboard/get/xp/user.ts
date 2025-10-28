@@ -33,7 +33,7 @@ export async function exec(req: Request, res: Response) {
         const xp = await tools.database.readDir(`/xp/${guild}`, true, true);
         const xpData = xp.filter(f => !f.name.endsWith('.daily')).map(file => ({
             user: file.name.replace('.xp', ''),
-            xp: file.value
+            xp: file.content
         }));
         return xpData;
     }

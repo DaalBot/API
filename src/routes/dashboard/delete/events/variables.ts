@@ -52,7 +52,17 @@ export async function exec(req: Request, res: Response) {
     const guild = req.query.guild as string;
 
     if (scope != 'global') {
-        const file = JSON.parse(await tools.database.read(`/events/events.json`));
+        const rawFile = await tools.database.read(`/events/events.json`);
+        // @ts-ignore
+        let file: Array<any> = rawFile;
+        if (typeof rawFile === 'string') { // Jesus christ this is a hack
+            try {
+                file = JSON.parse(rawFile);
+            } catch (e) {
+                return res.status(500).json({ ok: false, error: 'Failed to parse events file.' });
+            }
+        }
+
         const foundEvent = file.find((event: any) => event.id === scope);
 
         if (!foundEvent)

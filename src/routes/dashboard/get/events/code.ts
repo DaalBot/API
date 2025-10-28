@@ -37,7 +37,7 @@ export async function exec(req: Request, res: Response) {
 
         if (!event) return res.status(404).json({ ok: false, error: 'Event not found (are you sure you have permission to edit it?)' });
 
-        const file = await tools.database.read(`/events/${id}/event.js`);
+        const file = await tools.database.read(`/events/${id}/event.js`) as string; // The first letter is 'm' so it can't be JSON
 
         /**
         * File looks like this:

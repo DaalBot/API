@@ -22,7 +22,7 @@ export async function exec(req: Request, res: Response) {
     return (await tools.database.readDir(`/xp/${req.query.guild}/rewards`, true)).map((reward) => {
         return {
             level: reward.name.replace('.reward', ''),
-            reward: reward.value
+            reward: reward.content
         }
     });
 }

@@ -11,7 +11,7 @@ export const meta: RouteMetadata = {
     returns: {
         200: [{
             type: `Array<{ method: string, route: string, ts: number, executor: string, comment: string }>`,
-            example: null
+            example: JSON.stringify([{"method":"POST","route":"/dashboard/xp/reward","ts":1234567890,"executor":"123456789012345678","comment":"Added XP reward"}])
         }]
     },
     comment: null
