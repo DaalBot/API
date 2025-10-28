@@ -41,7 +41,7 @@ export async function exec(req: Request, res: Response) {
 
     eventsMaster.splice(eventsMaster.indexOf(event), 1);
 
-    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4));
+    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4), false);
 
     return 'Successfully deleted event';
 }

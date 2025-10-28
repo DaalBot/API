@@ -62,7 +62,7 @@ export async function exec(req: Request, res: Response) {
 
     const path = `/events/${scope == 'global' ? req.query.guild : scope}/${name}.var`;
 
-    await tools.database.write(path, data);
+    await tools.database.write(path, data, false);
 
     return 'success';
 }

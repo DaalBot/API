@@ -44,7 +44,7 @@ export async function exec(req: Request, res: Response) {
     const existingEventCode = existingEventFile.split(/execute: \(async\(.*, util\) => {/)[1].split('\n').slice(0, -2).join('\n');
 
     const newEventFile = existingEventFile.replace(existingEventCode, `\n${inputFileContents}`); // Newline stops code from being on the same line as the function
-    await tools.database.write(`/events/${eventId}/event.js`, `${newEventFile}`);
+    await tools.database.write(`/events/${eventId}/event.js`, `${newEventFile}`, false);
 
     return 'success';
 }

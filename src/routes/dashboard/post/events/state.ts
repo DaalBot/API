@@ -63,7 +63,7 @@ export async function exec(req: Request, res: Response) {
         return res.status(400).json({ ok: false, error: "State must be 'true' or 'false'" });
     }
 
-    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4));
+    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4), false);
 
     return 'success';
 }

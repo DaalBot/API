@@ -92,8 +92,8 @@ export async function readDir(path: string, readContents: boolean = false, skipD
 	return result;
 }
 
-export async function write(path: string, data: any): Promise<void> {
-	return await client.writeFile(path, typeof data === 'string' ? data : JSON.stringify(data));
+export async function write(path: string, data: any, encrypt: boolean = true): Promise<void> {
+	return await client.writeFile(path, typeof data === 'string' ? data : JSON.stringify(data), encrypt);
 }
 
 export async function createDir(path: string): Promise<void> {

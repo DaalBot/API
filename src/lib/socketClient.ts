@@ -209,14 +209,14 @@ class DaalBotSocketClient {
         return response.data;
     }
 
-    public async writeFile(path: string, content: string): Promise<void> {
+    public async writeFile(path: string, content: string, encrypt: boolean = true): Promise<void> {
         if (this.socket.readyState !== WebSocket.OPEN) {
             throw new Error('WebSocket is not connected');
         }
 
         this.socket.send(JSON.stringify({
             type: 'fileWrite',
-            data: { path, content }
+            data: { path, content, encrypt }
         }));
 
         const response = await this.waitUntilType('fileWriteResponse');

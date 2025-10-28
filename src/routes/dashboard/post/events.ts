@@ -114,8 +114,8 @@ export async function exec(req: Request, res: Response) {
 }`;
 
     await tools.database.createDir(`/events/${id}`);
-    await tools.database.write(`/events/${id}/event.js`, eventFile);
-    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4));
+    await tools.database.write(`/events/${id}/event.js`, eventFile, false);
+    await tools.database.write(`/events/events.json`, JSON.stringify(eventsMaster, null, 4), false);
 
     return eventObj;
 }
