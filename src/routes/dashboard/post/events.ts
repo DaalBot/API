@@ -99,6 +99,9 @@ export async function exec(req: Request, res: Response) {
         case 'guildrole':
             objectName = 'role';
             break;
+        case 'messagereaction':
+            objectName = 'reaction';
+            break;
         default:
             break;
     }
