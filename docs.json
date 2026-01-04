@@ -280,7 +280,7 @@
         "route": "/dashboard/auth/test",
         "meta": {
             "description": "Test if the current auth token is valid",
-            "body": {},
+            "body": null,
             "query": {
                 "guild": {
                     "type": "string",
@@ -1277,6 +1277,30 @@
                         "type": "string",
                         "example": "success"
                     }
+                ],
+                "400": [
+                    {
+                        "type": "object",
+                        "description": "Bad Request",
+                        "example": "{\"error\":\"Invalid message payload. Make sure your JSON is correct and follows the Discord API structure.\",\"details\":{}}"
+                    },
+                    {
+                        "type": "object",
+                        "description": "Channel type not allowed",
+                        "example": "{\"error\":\"Channel type not allowed\"}"
+                    }
+                ],
+                "404": [
+                    {
+                        "type": "object",
+                        "description": "Not Found",
+                        "example": "{\"error\":\"Channel not found\"}"
+                    },
+                    {
+                        "type": "object",
+                        "description": "Webhook not found",
+                        "example": "{\"error\":\"Webhook not found\"}"
+                    }
                 ]
             },
             "comment": null
@@ -1572,7 +1596,15 @@
             "body": null,
             "query": null,
             "authorization": "None",
-            "returns": {},
+            "returns": {
+                "200": [
+                    {
+                        "type": "HTML",
+                        "description": "A replica of the Discord chat UI showing the transcript",
+                        "example": null
+                    }
+                ]
+            },
             "comment": null
         },
         "type": "Public"
