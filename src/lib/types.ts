@@ -1,3 +1,10 @@
+interface RouteMetadataParams {
+    description: string,
+    type: string,
+    required: boolean,
+    example?: string
+}
+
 export interface RouteMetadata {
     /**
      * A description of what the hell the route does
@@ -6,11 +13,11 @@ export interface RouteMetadata {
     /**
      * The parameters expected in the request body
     */
-    body: Record<string, { description: string, type: string, required: boolean, example?: string }> | null;
+    body: Record<string, RouteMetadataParams> | null;
     /**
      * The parameters expected in the request query string
     */
-    query: Record<string, { description: string, type: string, required: boolean, example?: string }> | null;
+    query: Record<string, RouteMetadataParams> | null;
     /**
      * The authorization level required to access the route, this stacks on top of any dashboard authorization.
     */
@@ -18,12 +25,16 @@ export interface RouteMetadata {
     /**
      * The possible return codes and their types/examples
     */
-    returns: Record<number, { type: string, example: string | null }[]> | null;
+    returns: Record<number, {
+        type: string,
+        description?: string,
+        example: string | null
+    }[]> | null;
     /**
      * The comment to show alongside the route in activity logs
     */
     comment: string | null;
-    rate?: {
+    rate?: { // Legacy, this is now handled at the network level
         window: number; // In seconds, determines the window from the first request until it resets
         limit: number; // The maximum number of requests allowed in the window
     }

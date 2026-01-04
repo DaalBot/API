@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 
 export const meta: RouteMetadata = {
     description: 'Test if the current auth token is valid',
-    body: {},
+    body: null,
     query: null,
     authorization: 'None',
     returns: {

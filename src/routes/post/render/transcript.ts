@@ -7,7 +7,13 @@ export const meta: RouteMetadata = {
     body: null,
     query: null,
     authorization: 'None',
-    returns: {},
+    returns: {
+        200: [{
+            type: 'HTML',
+            description: 'A replica of the Discord chat UI showing the transcript',
+            example: null
+        }]
+    },
     comment: null
 };
 
