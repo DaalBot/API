@@ -23,13 +23,13 @@ export const meta: RouteMetadata = {
             example: `File not found`
         }]
     },
-    comment: 'Deleted data'
+    comment: 'deleted managed data'
 };
 
 export async function exec(req: Request, res: Response) {
     const guild = req.query.guild as string;
     const path = req.query.path;
-    if (!path) res.status(400).json({ ok: false, error: 'Missing path query parameter' });
+    if (!path) return res.status(400).json({ ok: false, error: 'Missing path query parameter' });
 
     // Send off the request to delete the file
     await tools.database.deleteFile(`/managed/${guild}/${path}`);

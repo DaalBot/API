@@ -27,7 +27,7 @@ export const meta: RouteMetadata = {
             }
         ]
     },
-    comment: null
+    comment: 'toggled role invites for the server'
 };
 
 export async function exec(req: Request, res: Response) {

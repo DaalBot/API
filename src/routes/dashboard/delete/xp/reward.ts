@@ -19,7 +19,7 @@ export const meta: RouteMetadata = {
             example: 'success'
         }]
     },
-    comment: 'Deleted XP reward'
+    comment: 'deleted a XP reward'
 };
 
 export async function exec(req: Request, res: Response) {

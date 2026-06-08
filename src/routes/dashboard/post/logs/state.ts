@@ -26,7 +26,7 @@ export const meta: RouteMetadata = {
             example: 'Success.'
         }]
     },
-    comment: null
+    comment: 'changed the state of a gateway event logging for the server'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -42,5 +42,5 @@ export async function exec(req: Request, res: Response) {
     }
 
     await tools.database.write(`/logging/${guild}/${event.toUpperCase()}.enabled`, state, true);
-    return 'Success.';
+    res.status(200).json({ ok: true, data: 'Success.' });
 }

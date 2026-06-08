@@ -27,7 +27,7 @@ export const meta: RouteMetadata = {
             example: "Failed to delete autorole, are you sure it exists?"
         }]
     },
-    comment: 'Deleted autorole'
+    comment: 'deleted an autorole'
 }
 
 export async function exec(req: Request, res: Response) {

@@ -40,7 +40,7 @@ export const meta: RouteMetadata = {
             example: 'Failed to delete variable, are you sure it exists?'
         }]
     },
-    comment: 'Deleted event variable'
+    comment: 'deleted an event variable'
 };
 
 export async function exec(req: Request, res: Response) {

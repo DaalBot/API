@@ -23,7 +23,7 @@ export const meta: RouteMetadata = {
             example: 'Role already exists'
         }],
     },
-    comment: null
+    comment: 'added a role to the autorole list'
 };
 
 export async function exec(req: Request, res: Response) {

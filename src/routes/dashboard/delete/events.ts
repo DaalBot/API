@@ -27,7 +27,7 @@ export const meta: RouteMetadata = {
             example: 'Event not found'
         }],
     },
-    comment: 'Deleted event'
+    comment: 'deleted an event'
 };
 
 export async function exec(req: Request, res: Response) {

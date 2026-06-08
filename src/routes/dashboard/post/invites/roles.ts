@@ -36,7 +36,7 @@ export const meta: RouteMetadata = {
             }
         ]
     },
-    comment: null
+    comment: 'tied a role to an invite'
 };
 
 export async function exec(req: Request, res: Response) {

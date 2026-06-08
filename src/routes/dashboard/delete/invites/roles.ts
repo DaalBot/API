@@ -26,7 +26,7 @@ export const meta: RouteMetadata = {
             }
         ]
     },
-    comment: null
+    comment: 'deleted a role invite from the server'
 };
 
 export async function exec(req: Request, res: Response) {

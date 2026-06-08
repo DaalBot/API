@@ -18,11 +18,16 @@ export const meta: RouteMetadata = {
     },
     query: null,
     authorization: 'None',
-    returns: {},
-    comment: null
+    returns: {
+        200: [{
+            type: 'string',
+            example: 'Success.'
+        }]
+    },
+    comment: 'added an XP reward'
 };
 
 export async function exec(req: Request, res: Response) {
     await tools.database.write(`/xp/${req.query.guild}/rewards/${req.body.level}.reward`, req.body.value);
-    return 'success';
+    res.status(200).json({ ok: true, data: 'Success.' });
 }

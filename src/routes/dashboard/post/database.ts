@@ -28,7 +28,7 @@ export const meta: RouteMetadata = {
             example: 'Invalid path'
         }]
     },
-    comment: 'wrote a string to a file in the managed db'
+    comment: 'wrote to a file in the managed DB'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -52,5 +52,5 @@ export async function exec(req: Request, res: Response) {
 
     await tools.database.write(`/managed/${guild}/${path}`, data);
 
-    return 'success';
+    res.status(200).json({ ok: true, data: 'Success.' });
 }

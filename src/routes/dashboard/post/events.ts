@@ -41,7 +41,7 @@ export const meta: RouteMetadata = {
             example: 'Missing required parameters'
         }]
     },
-    comment: null
+    comment: 'created a new event'
 };
 
 export async function exec(req: Request, res: Response) {

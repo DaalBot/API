@@ -19,7 +19,7 @@ export const meta: RouteMetadata = {
             example: 'Success.'
         }]
     },
-    comment: null
+    comment: 'set the logging channel for the server'
 };
 
 export async function exec(req: Request, res: Response) {

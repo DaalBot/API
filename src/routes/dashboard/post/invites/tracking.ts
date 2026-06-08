@@ -22,7 +22,7 @@ export const meta: RouteMetadata = {
             }
         ]
     },
-    comment: null,
+    comment: 'toggled invite tracking for the server',
     rate: {
         window: 10,
         limit: 2

@@ -25,7 +25,7 @@ export const meta: RouteMetadata = {
             example: 'success'
         }]
     },
-    comment: null
+    comment: 'edited event code'
 };
 
 export async function exec(req: Request, res: Response) {

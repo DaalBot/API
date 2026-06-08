@@ -72,7 +72,7 @@ export const meta: RouteMetadata = {
             })
         }]
     },
-    comment: null
+    comment: 'sent a message'
 };
 
 export async function exec(req: Request, res: Response) {
@@ -120,7 +120,7 @@ export async function exec(req: Request, res: Response) {
                 return handleAxiosError(e);
             }
         }
-        return 'success';
+        res.status(200).json({ ok: true, data: 'Success.' });
     }
 
     let baseURL = `https://discord.com/api/v10/channels/${channel.id}`;
@@ -157,5 +157,5 @@ export async function exec(req: Request, res: Response) {
         }
     }
 
-    return 'success';
+    res.status(200).json({ ok: true, data: 'Success.' });
 }
