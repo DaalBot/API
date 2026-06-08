@@ -38,7 +38,7 @@
                     }
                 ]
             },
-            "comment": "Deleted autorole"
+            "comment": "deleted an autorole"
         },
         "type": "Dashboard"
     },
@@ -75,7 +75,7 @@
                     }
                 ]
             },
-            "comment": "Deleted data"
+            "comment": "deleted managed data"
         },
         "type": "Dashboard"
     },
@@ -135,7 +135,7 @@
                     }
                 ]
             },
-            "comment": "Deleted event variable"
+            "comment": "deleted an event variable"
         },
         "type": "Dashboard"
     },
@@ -178,7 +178,7 @@
                     }
                 ]
             },
-            "comment": "Deleted event"
+            "comment": "deleted an event"
         },
         "type": "Dashboard"
     },
@@ -214,7 +214,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "deleted a role invite from the server"
         },
         "type": "Dashboard"
     },
@@ -245,7 +245,7 @@
                     }
                 ]
             },
-            "comment": "Deleted XP reward"
+            "comment": "deleted a XP reward"
         },
         "type": "Dashboard"
     },
@@ -747,7 +747,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "added a role to the autorole list"
         },
         "type": "Dashboard"
     },
@@ -843,7 +843,7 @@
                     }
                 ]
             },
-            "comment": "wrote a string to a file in the managed db"
+            "comment": "wrote to a file in the managed DB"
         },
         "type": "Dashboard"
     },
@@ -880,7 +880,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "edited event code"
         },
         "type": "Dashboard"
     },
@@ -1045,7 +1045,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "created a new event"
         },
         "type": "Dashboard"
     },
@@ -1082,7 +1082,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "toggled role invites for the server"
         },
         "type": "Dashboard"
     },
@@ -1128,7 +1128,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "tied a role to an invite"
         },
         "type": "Dashboard"
     },
@@ -1159,7 +1159,7 @@
                     }
                 ]
             },
-            "comment": null,
+            "comment": "toggled invite tracking for the server",
             "rate": {
                 "window": 10,
                 "limit": 2
@@ -1194,7 +1194,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "set the logging channel for the server"
         },
         "type": "Dashboard"
     },
@@ -1232,7 +1232,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "changed the state of a gateway event logging for the server"
         },
         "type": "Dashboard"
     },
@@ -1303,7 +1303,7 @@
                     }
                 ]
             },
-            "comment": null
+            "comment": "sent a message"
         },
         "type": "Dashboard"
     },
@@ -1332,8 +1332,15 @@
                 }
             },
             "authorization": "None",
-            "returns": {},
-            "comment": null
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ]
+            },
+            "comment": "added an XP reward"
         },
         "type": "Dashboard"
     },
@@ -1361,8 +1368,15 @@
                 }
             },
             "authorization": "None",
-            "returns": {},
-            "comment": null
+            "returns": {
+                "200": [
+                    {
+                        "type": "string",
+                        "example": "Success."
+                    }
+                ]
+            },
+            "comment": "set the XP of a user"
         },
         "type": "Dashboard"
     },
