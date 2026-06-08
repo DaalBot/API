@@ -83,6 +83,10 @@
         {
             "name": "Voice State Update",
             "value": "voiceStateUpdate"
+        },
+        {
+            "name": "HTTP",
+            "value": "http"
         }
     ]
 }
