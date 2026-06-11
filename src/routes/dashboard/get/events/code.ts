@@ -60,14 +60,14 @@ export async function exec(req: Request, res: Response) {
         let code = file;
         const fileLines = file.split('\n');
         const startLine = fileLines.findIndex(line => line.match(/execute:\s*\(async\(.*, util\) => {/));
-        const endLine = fileLines.length; // Exclude the last line (closing bracket of the module.exports object)
+        const endLine = fileLines.length - 2; // Exclude the last line (closing bracket of the module.exports object)
         
         // Extract the code between the start and end lines
-        code = fileLines.slice(startLine + 1, endLine).join('\n');
+        code = fileLines.slice(startLine + 1).join('\n');
         // Remove the first line of the code (the async function declaration)
         code = code.replace(/^\s*async\s*\(message, util\) => {\s*/, '');
-        // Remove the last line of the code (the closing bracket of the async function)
-        code = code.replace(/\s*}\s*$/, '');
+        // // Remove the last line of the code (the closing bracket of the async function)
+        // code = code.replace(/\s*}\s*$/, '');
 
         return code;
     } catch (e) {
