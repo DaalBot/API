@@ -8,10 +8,10 @@
     "test": "NODE_ENV=test PORT=3000 DEV=1 tsx tests/entry.ts"
   },
   "dependencies": {
-    "axios": "^1.16.0",
-    "body-parser": "^1.20.5",
+    "axios": "^1.18.0",
+    "body-parser": "^1.20.6",
     "cors": "^2.8.5",
-    "discord.js": "^14.26.4",
+    "discord.js": "^14.27.0",
     "dotenv": "^16.4.7",
     "express": "^4.22.2",
     "pantry-node": "^0.1.3",
